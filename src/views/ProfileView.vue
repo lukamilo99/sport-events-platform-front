@@ -14,6 +14,7 @@
       <input v-model="email" type="email" id="email" :disabled="isOAuthUser">
     </div>
     <button @click="updateProfile">Update Profile</button>
+    <p class="error-text">{{ updateError }}</p>
   </div>
 </template>
 
@@ -22,18 +23,20 @@
 <script>
 import { ref, watch, computed } from 'vue';
 import { useStore } from 'vuex';
+import { useValidator } from '@/validator/validator';
 
 export default {
   setup() {
     const store = useStore();
+    const { validateEmail, validateNotEmpty } = useValidator();
 
     const user = computed(() => store.state.user);
 
     const firstname = ref(user.value.firstname);
     const lastname = ref(user.value.lastname);
     const email = ref(user.value.email);
-    const error = ref('');
-    const isOAuthUser = computed(() => user.value.isOAuth);
+    const updateError = ref('');
+    const isOAuthUser = computed(() => user.value.oauth);
 
     watch(user, (newVal) => {
       firstname.value = newVal.firstname;
@@ -41,34 +44,38 @@ export default {
       email.value = newVal.email;
     });
 
-    const validateFields = () => {
-      if (!firstname.value.trim()) {
-        return "First name cannot be empty.";
+    const validateUpdate = () => {
+      const firstnameError = validateNotEmpty(firstname.value, "Firstname");
+      if (firstnameError) {
+        updateError.value = firstnameError;
+        return false;
       }
-      if (!lastname.value.trim()) {
-        return "Last name cannot be empty.";
+
+      const lastnameError = validateNotEmpty(lastname.value, "Lastname");
+      if (lastnameError) {
+        updateError.value = lastnameError;
+        return false;
       }
-      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-      if (!emailRegex.test(email.value)) {
-        return "Invalid email format.";
+
+      const emailError = validateEmail(email.value);
+      if (emailError) {
+        updateError.value = emailError;
+        return false;
       }
-      return null;
+      return true;
     };
 
     const updateProfile = async () => {
-      const validationError = validateFields();
-      if (validationError) {
-        error.value = validationError;
-        return;
-      }
+      if (!validateUpdate()) return;
+
       try {
         await store.dispatch('updateProfile', {
           firstname: firstname.value,
           lastname: lastname.value,
           email: email.value
         });
-      } catch (error) {
-        console.log("Update error")
+      } catch (e) {
+        console.log("Update error:", e);
       }
     };
 
@@ -77,10 +84,59 @@ export default {
       firstname,
       lastname,
       email,
-      error,
+      updateError,
       isOAuthUser,
       updateProfile
     };
   },
 };
 </script>
+
+<style scoped>
+.container {
+  max-width: 600px;
+  margin: 50px auto;
+  background: #f7f7f7;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+div {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #007BFF;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+</style>

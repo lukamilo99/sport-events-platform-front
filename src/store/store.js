@@ -2,7 +2,6 @@ import { createStore } from 'vuex';
 import axios from 'axios';
 import router from "@/router/router";
 
-axios.defaults.withCredentials = true;
 
 export const store = createStore({
     state: {
@@ -22,13 +21,17 @@ export const store = createStore({
             await axios.post('http://localhost:8081/auth/register', credentials);
         },
         async login(_, credentials) {
-            await axios.post(`http://localhost:8081/auth/login`, credentials);
+            const response = await axios.post(`http://localhost:8081/auth/login`, credentials);
+            console.log(response.data)
+            if (response.data) {
+                localStorage.setItem('jwt', response.data);
+            }
         },
         async googleLogin() {
             window.location.href = 'http://localhost:8081/oauth2/authorize/google?redirect_uri=http://localhost:8080/oauth2/redirect';
         },
         async logout({ commit }) {
-            await axios.get('http://localhost:8081/auth/logout');
+            localStorage.removeItem('jwt');
             commit('SET_USER', null);
         },
         async updateProfile(_, credentials) {
@@ -39,7 +42,7 @@ export const store = createStore({
         },
         async fetchUserAndRedirect({ commit, state }) {
             try {
-                const response = await axios.get('http://localhost:8081/auth/me');
+                const response = await axios.get('http://localhost:8081/user/me');
                 commit('SET_USER', response.data);
 
                 if (state.currentRoute === '/login' || state.currentRoute === '/') {

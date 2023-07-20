@@ -64,7 +64,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-
     if (to.meta.requiresAuth) {
         if (!store.state.user) {
             next('/login');
@@ -81,6 +80,17 @@ router.beforeEach((to, from, next) => {
         }
     } else {
         next();
+    }
+});
+
+router.beforeEach(async (to, from, next) => {
+    try {
+        if (to.path.includes('/oauth2/authorize') || to.path.includes('/auth/login')) {
+            await store.dispatch('setCurrentRoute', to.fullPath);
+        }
+        next();
+    } catch (error) {
+        console.error("Error setting current route: ", error);
     }
 });
 

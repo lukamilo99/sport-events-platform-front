@@ -3,27 +3,39 @@
     <header>
       <h1 class="app-title">Sport Connecting people</h1>
       <div class="user-section">
-        <button v-if="isLoggedIn" @click="goToProfile" class="profile-btn">Profile</button>
-        <button v-if="isLoggedIn" @click="logout" class="logout-btn">Logout</button>
+        <input type="text" placeholder="Search for event" class="search-input" />
+        <div v-if="isLoggedIn">
+          <button @click="toggleProfileMenu" class="profile-btn">Profile</button>
+          <div v-if="showProfileMenu" class="profile-dropdown">
+            <button @click="goToProfile">My Profile</button>
+            <button @click="logout">Logout</button>
+          </div>
+        </div>
         <router-link v-else to="/login" class="login-btn">Login</router-link>
       </div>
     </header>
     <main>
+      <EventsList />
     </main>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue';
+import {computed, ref} from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import EventsList from '../components/EventList.vue';
 
 export default {
+  components: {
+    EventsList
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
 
     const isLoggedIn = computed(() => store.state.user !== null);
+    const showProfileMenu = ref(false);
 
     const logout = async () => {
       try {
@@ -32,6 +44,10 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    };
+
+    const toggleProfileMenu = () => {
+      showProfileMenu.value = !showProfileMenu.value;
     };
 
     const goToLogin = () => {
@@ -46,7 +62,9 @@ export default {
       isLoggedIn,
       logout,
       goToLogin,
-      goToProfile
+      goToProfile,
+      toggleProfileMenu,
+      showProfileMenu
     };
   },
 };
@@ -115,15 +133,6 @@ button:hover, .login-btn:hover {
   background-color: #0056b3;
 }
 
-.logout-btn {
-  background-color: #dc3545;
-  color: #fff;
-}
-
-.logout-btn:hover {
-  background-color: #b22234;
-}
-
 .login-btn {
   background-color: #28a745;
   color: #fff;
@@ -142,5 +151,39 @@ button:hover, .login-btn:hover {
   height: 24px;
   border-radius: 50%;
   margin-right: 1rem;
+}
+
+.search-input {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  margin-right: 10px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+}
+
+.profile-dropdown {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  top: 60px;
+  right: 5%;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  z-index: 1001;
+}
+
+.profile-dropdown button {
+  width: 100%;
+  text-align: left;
 }
 </style>

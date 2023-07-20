@@ -5,9 +5,17 @@
 </template>
 
 <script>
+import { useStore } from 'vuex';
 
 export default {
-  name: 'App'
+  name: 'App',
+  async created() {
+    const store = useStore();
+    const jwtToken = localStorage.getItem('jwt');
+    if (jwtToken) {
+      await store.dispatch('fetchUserAndRedirect');
+    }
+  },
 }
 </script>
 

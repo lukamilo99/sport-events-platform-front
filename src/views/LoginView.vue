@@ -15,10 +15,13 @@
 <script>
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
+import { useValidator } from '@/validator/validator';
 
 export default {
+
   setup() {
     const store = useStore();
+    const { validateEmail, validateNotEmpty } = useValidator();
 
     const email = ref('');
     const password = ref('');
@@ -29,10 +32,18 @@ export default {
     const validateLogin = () => {
       loginError.value = '';
 
-      if (email.value === '' || password.value === '') {
-        loginError.value = 'Both fields must be filled out.';
+      const emailError = validateEmail(email.value);
+      if (emailError) {
+        loginError.value = emailError;
         return false;
       }
+
+      const passwordError = validateNotEmpty(password.value);
+      if (passwordError) {
+        loginError.value = passwordError;
+        return false;
+      }
+
       return true;
     };
 

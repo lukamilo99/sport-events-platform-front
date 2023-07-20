@@ -5,7 +5,7 @@
     <input v-model="lastname" type="text" placeholder="Last Name">
     <input v-model="email" type="email" placeholder="Email">
     <input v-model="password" type="password" placeholder="Password">
-    <input v-model="confirmPassword" type="password" placeholder="Confirm Password">
+    <input v-model="repeatedPassword" type="password" placeholder="Confirm Password">
     <button @click="register" class="register-btn">Register</button>
     <button @click="googleRegister" class="google-register-btn">
       <img src="src/assets/google.png" alt="Google" class="google-icon"> Register using Google account
@@ -19,50 +19,51 @@
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { useValidator } from '@/validator/validator';
 
 export default {
   setup() {
     const store = useStore();
     const router = useRouter();
+    const { validateEmail, validatePassword, validateNotEmpty, confirmPassword } = useValidator();
 
     const firstname = ref('');
     const lastname = ref('');
     const email = ref('');
     const password = ref('');
-    const confirmPassword = ref('');
+    const repeatedPassword = ref('');
     const signUpError = ref('');
-
-    const isValidEmail = (input) => {
-      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-      return emailPattern.test(input);
-    };
-
-    const isValidPassword = (input) => {
-      const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?!.*\s).{8,}$/;
-      return passwordPattern.test(input);
-    };
 
     const validateSignUp = () => {
       signUpError.value = '';
 
-      if (firstname.value === '' || lastname.value === '' || email.value === '' ||
-          password.value === '' || confirmPassword.value === '') {
-        signUpError.value = 'All fields must be filled out.';
+      const firstnameError = validateNotEmpty(firstname.value, "Firstname");
+      if (firstnameError) {
+        signUpError.value = firstnameError;
         return false;
       }
 
-      if (!isValidEmail(email.value)) {
-        signUpError.value = 'Invalid email format.';
+      const lastnameError = validateNotEmpty(lastname.value, "Lastname");
+      if (lastnameError) {
+        signUpError.value = lastnameError;
         return false;
       }
 
-      if (!isValidPassword(password.value)) {
-        signUpError.value = 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and be at least 8 characters long.';
+      const emailError = validateEmail(email.value);
+      if (emailError) {
+        signUpError.value = emailError;
         return false;
       }
 
-      if (password.value !== confirmPassword.value) {
-        signUpError.value = 'Passwords do not match.';
+      const passwordError = validatePassword(password.value);
+      if (passwordError) {
+        signUpError.value = passwordError;
+        return false;
+      }
+
+      const confirmError = confirmPassword(password.value, repeatedPassword.value);
+      if (confirmError) {
+        signUpError.value = confirmError;
         return false;
       }
 
@@ -78,7 +79,7 @@ export default {
           lastname: lastname.value,
           email: email.value,
           password: password.value,
-          confirmPassword: confirmPassword.value
+          repeatedPassword: repeatedPassword.value
         });
         await router.push('/login');
       } catch (error) {
@@ -100,7 +101,7 @@ export default {
       lastname,
       email,
       password,
-      confirmPassword,
+      repeatedPassword,
       signUpError,
       register,
       googleRegister
