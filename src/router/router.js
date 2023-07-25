@@ -4,6 +4,7 @@ import Register from '../views/SignUpView.vue';
 import Home from "@/views/HomeView.vue";
 import OAuthRedirect from "@/views/OAuthRedirect.vue";
 import Profile from "@/views/ProfileView.vue";
+import CreateEvent from "@/views/CreateEventView.vue";
 import {store} from "@/store/store";
 
 const routes = [
@@ -51,6 +52,15 @@ const routes = [
         path: '/profile',
         name: 'profile',
         component: Profile,
+        meta: {
+            requiresAuth: true,
+            roles: ['ADMIN', 'USER']
+        }
+    },
+    {
+        path: '/create-event',
+        name: 'createEvent',
+        component: CreateEvent,
         meta: {
             requiresAuth: true,
             roles: ['ADMIN', 'USER']

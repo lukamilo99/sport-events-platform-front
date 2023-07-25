@@ -18,8 +18,6 @@
   </div>
 </template>
 
-
-
 <script>
 import { ref, watch, computed } from 'vue';
 import { useStore } from 'vuex';
@@ -94,12 +92,13 @@ export default {
 
 <style scoped>
 .container {
-  max-width: 600px;
-  margin: 50px auto;
-  background: #f7f7f7;
+  max-width: 400px;
+  margin: 100px auto;
   padding: 20px;
+  background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 h2 {
@@ -118,25 +117,30 @@ label {
 
 input {
   width: 100%;
-  padding: 10px;
+  padding: 8px;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 button {
-  display: block;
-  width: 100%;
-  padding: 10px 15px;
-  background-color: #007BFF;
+  width: 80%;
+  padding: 0.4rem 0.8rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 25px;
+  background-color: #007BFF;
   color: white;
+  font-size: 0.9rem;
   cursor: pointer;
-  font-size: 1rem;
+  transition: background-color 0.3s, transform 0.3s;
+  margin: 10px auto;
+  display: block;
 }
 
 button:hover {
   background-color: #0056b3;
+  transform: scale(1.05);
 }
 </style>
+
