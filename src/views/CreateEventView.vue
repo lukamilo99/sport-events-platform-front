@@ -29,36 +29,37 @@
         </div>
       </div>
       <span @click.prevent="toggleMap" class="choose-map-link">Choose on map</span>
-      <div v-if="showMap" class="map-modal-overlay" @click="toggleMap">
-        <div class="map-modal" @click.stop>
-          <div class="map-container">
-            <l-map :zoom="13" :center="initialLocation" @ready="handleMapReady">
-              <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></l-tile-layer>
-              <l-marker :lat-lng="event.location.coordinates"></l-marker>
-            </l-map>
-          </div>
-          <button @click.prevent="submitLocation">Submit location</button>
-        </div>
-      </div>
-      <button type="submit">Submit</button>
+      <EventMap
+          :mode="'create'"
+          :initialLocation="initialLocation"
+          :markerLocation="event.location.coordinates"
+          :showMap="showMap"
+          @update:showMap="toggleMap"
+          @update-marker-location="updateMarkerLocation"
+          @submit-location="submitLocation"
+      />
+      <button @click.prevent="submitForm">Submit</button>
     </form>
+    <div v-if="confirmationMessage" class="confirmation-message">
+      {{ confirmationMessage }}
+    </div>
   </div>
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import { ref } from 'vue';
+import {ref} from 'vue';
 import axios from "axios";
-import { debounce } from 'lodash';
+import {debounce} from 'lodash';
+import {useValidator} from "@/validator/validator";
+import dayjs from "dayjs";
+import EventMap from "@/components/EventMap.vue";
 
 export default {
   components: {
-    LMap,
-    LTileLayer,
-    LMarker,
-    VueDatePicker
+    VueDatePicker,
+    EventMap
   },
   setup() {
     const event = ref({
@@ -75,6 +76,49 @@ export default {
     const locationQuery = ref('');
     const locations = ref([]);
     const showMap = ref(false);
+    const eventError = ref('');
+    const isValidAddress = ref(false);
+    const confirmationMessage = ref('');
+    const { validateNotEmpty, validateAddress } = useValidator();
+
+    const validateEvent = () => {
+      const nameError = validateNotEmpty(event.value.name, "Name");
+      if (nameError) {
+        eventError.value = nameError;
+        return false;
+      }
+
+      const capacityError = validateNotEmpty(event.value.capacity, "Capacity");
+      if (capacityError) {
+        eventError.value = capacityError;
+        return false;
+      }
+
+      const sportError = validateNotEmpty(event.value.sport, "Sport");
+      if (sportError) {
+        eventError.value = sportError;
+        return false;
+      }
+
+      const locationError = validateNotEmpty(event.value.location, "Location");
+      if (locationError) {
+        eventError.value = locationError;
+        return false;
+      }
+
+      const dateError = validateNotEmpty(event.value.date, "Date");
+      if (dateError) {
+        eventError.value = dateError;
+        return false;
+      }
+
+      const addressError = validateAddress(isValidAddress, "Address");
+      if (addressError) {
+        eventError.value = addressError;
+        return false;
+      }
+      return true;
+    };
 
     const handleMapReady = (mapInstance) => {
       mapInstance.on('click', async function(e) {
@@ -82,19 +126,59 @@ export default {
       });
     };
 
+    const updateMarkerLocation = (newLocation) => {
+      event.value.location.coordinates = newLocation;
+    };
+
     const selectLocation = (location) => {
+      isValidAddress.value = true;
       event.value.location.formatted = location.formatted;
+      event.value.location.coordinates = location.coordinates
       locationQuery.value = location.formatted;
       locations.value = [];
+    };
+
+    const formatToISO = (dateString) => {
+      return dayjs(dateString).format('YYYY-MM-DDTHH:mm:ss');
+    }
+
+    const toggleMap = () => {
+      showMap.value = !showMap.value;
+    };
+
+    const resetForm = () => {
+      event.value = {
+        name: '',
+        capacity: null,
+        sport: '',
+        location: {
+          formatted: '',
+          coordinates: [45.2671, 19.8335]
+        },
+        date: null
+      };
+      locationQuery.value = '';
+    };
+
+    const handleSuccessfulResponse = (response) => {
+      if (response.status === 200) {
+        confirmationMessage.value = "Event successfully created!";
+        resetForm();
+      }
+      setTimeout(() => {
+        confirmationMessage.value = '';
+      }, 2000);
     };
 
     const fetchLocationFromCoordinates = debounce(async () => {
       try {
         const lat = event.value.location.coordinates[0];
         const lon = event.value.location.coordinates[1];
-        await axios.get('http://localhost:8081/geo/address', { params: { lat, lon } })
+        await axios.get('http://localhost:8081/geo/address',
+            { params: { lat, lon } })
             .then(value => {
               locationQuery.value = value.data.formatted;
+              event.value.location.formatted = value.data.formatted;
               event.value.location.coordinates = value.data.coordinates;
             });
       } catch (error) {
@@ -107,6 +191,7 @@ export default {
         locations.value = [];
         return;
       }
+      isValidAddress.value = false;
 
       try {
         await axios.get('http://localhost:8081/geo/autocomplete', { params: { query: locationQuery.value } })
@@ -119,21 +204,20 @@ export default {
       }
     }, 300);
 
-    const submitForm = async () => {
-      try {
-        await axios.post('http://localhost:8081/event/create', event.value);
-      } catch (error) {
-        console.error('Error creating event:', error);
-      }
-    };
-
-    const toggleMap = () => {
-      showMap.value = !showMap.value;
-    };
-
     const submitLocation = () => {
       fetchLocationFromCoordinates();
       toggleMap();
+    };
+
+    const submitForm = async () => {
+      if (validateEvent()) return;
+      event.value.date = formatToISO(event.value.date);
+      try {
+        const response = await axios.post('http://localhost:8081/event/create', event.value);
+        handleSuccessfulResponse(response);
+      } catch (error) {
+        console.error('Error creating event:', error);
+      }
     };
 
     return {
@@ -143,11 +227,13 @@ export default {
       locations,
       handleMapReady,
       searchLocations,
+      confirmationMessage,
       selectLocation,
       submitForm,
       toggleMap,
       showMap,
-      submitLocation
+      submitLocation,
+      updateMarkerLocation
     };
   }
 };
@@ -237,35 +323,14 @@ button:hover {
   background-color: #217c3b;
 }
 
-.map-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.map-modal {
-  width: 70%;
-  height: 60%;
-  background: #ffffff;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-}
-
-.map-container {
-  height: calc(100% - 50px);
-  width: 100%;
-  overflow: hidden;
+.confirmation-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 </style>
-
-
-
 

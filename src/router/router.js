@@ -5,6 +5,7 @@ import Home from "@/views/HomeView.vue";
 import OAuthRedirect from "@/views/OAuthRedirect.vue";
 import Profile from "@/views/ProfileView.vue";
 import CreateEvent from "@/views/CreateEventView.vue";
+import Events from "@/views/EventsView.vue";
 import {store} from "@/store/store";
 
 const routes = [
@@ -64,6 +65,14 @@ const routes = [
         meta: {
             requiresAuth: true,
             roles: ['ADMIN', 'USER']
+        }
+    },
+    {
+        path: '/events',
+        name: 'events',
+        component: Events,
+        meta: {
+            requiresAuth: false
         }
     }
 ];

@@ -1,9 +1,9 @@
 <template>
   <div class="home-container">
     <header>
-      <h1 class="app-title">Sport Connecting people</h1>
+      <h1 class="app-title">Sport Connecting People</h1>
       <div class="user-section">
-        <input type="text" placeholder="Search for event" class="search-input" />
+        <button @click="createEvent" class="create-event-btn">Create Event</button>
         <div v-if="isLoggedIn">
           <button @click="toggleProfileMenu" class="profile-btn">Profile</button>
           <div v-if="showProfileMenu" class="profile-dropdown">
@@ -14,17 +14,32 @@
         <router-link v-else to="/login" class="login-btn">Login</router-link>
       </div>
     </header>
+    <section class="search-section">
+      <div class="search-wrapper">
+        <div class="icon-filters">
+          <button @click="redirectToEvents('sport', 'football')" class="icon-btn">⚽</button>
+          <button @click="redirectToEvents('sport', 'basketball')" class="icon-btn">🏀</button>
+          <button @click="redirectToEvents('sport', 'tennis')" class="icon-btn">🎾</button>
+          <button @click="redirectToEvents('city', 'belgrade')" class="icon-btn">🏙️</button>
+          <button @click="redirectToEvents('city', 'novi_sad')" class="icon-btn">🌆</button>
+          <button @click="redirectToEvents('city', 'nis')" class="icon-btn">🌄</button>
+        </div>
+        <input type="text" placeholder="Search by city or sport" class="search-input-extended" />
+      </div>
+    </section>
+    <h2 class="latest-events-title">Latest Events</h2>
     <main>
-      <EventsList />
+      <EventsList :events="events" />
     </main>
   </div>
 </template>
 
 <script>
-import {computed, ref} from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import EventsList from '../components/EventList.vue';
+import axios from "axios";
 
 export default {
   components: {
@@ -33,9 +48,24 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-
     const isLoggedIn = computed(() => store.state.user !== null);
     const showProfileMenu = ref(false);
+    const events = ref([]);
+
+    onMounted(async () => {
+      try {
+        const response = await axios.get('http://localhost:8081/event/latest');
+        events.value = response.data;
+      } catch (error) {
+        console.error("Error fetching recent events:", error);
+      }
+    });
+
+    const redirectToEvents = (type, value) => {
+      let query = {};
+      query[type] = value;
+      router.push({ path: '/events', query: query });
+    };
 
     const logout = async () => {
       try {
@@ -49,6 +79,11 @@ export default {
     const toggleProfileMenu = () => {
       showProfileMenu.value = !showProfileMenu.value;
     };
+
+    const createEvent = () => {
+      router.push('/create-event');
+    };
+
 
     const goToLogin = () => {
       router.push('/login');
@@ -64,7 +99,10 @@ export default {
       goToLogin,
       goToProfile,
       toggleProfileMenu,
-      showProfileMenu
+      createEvent,
+      showProfileMenu,
+      events,
+      redirectToEvents
     };
   },
 };
@@ -153,17 +191,20 @@ button:hover, .login-btn:hover {
   margin-right: 1rem;
 }
 
-.search-input {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
+.create-event-btn {
+  background-color: #28a745;
+  color: #fff;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  border: none;
   border-radius: 25px;
-  margin-right: 10px;
-  outline: none;
-  transition: border 0.3s;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
-.search-input:focus {
-  border-color: #007bff;
+.create-event-btn:hover {
+  background-color: #217c3b;
+  transform: scale(1.05);
 }
 
 .profile-dropdown {
@@ -185,5 +226,63 @@ button:hover, .login-btn:hover {
 .profile-dropdown button {
   width: 100%;
   text-align: left;
+}
+
+.latest-events-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  text-align: center;
+  color: #343a40;
+}
+
+.search-section {
+  background-color: #f8f9fa;
+  padding: 20px 5%;
+  border-bottom: 1px solid #e0e0e0;
+  margin-top: 80px;
+}
+
+.search-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.icon-btn {
+  background-color: #e0e0e0;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.icon-btn:hover {
+  background-color: #d1d1d1;
+}
+
+.search-input-extended {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.search-input-extended:focus {
+  border-color: #007bff;
 }
 </style>

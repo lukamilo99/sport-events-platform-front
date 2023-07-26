@@ -5,7 +5,14 @@ export const useValidator = () => {
     };
 
     const validateNotEmpty = (value, fieldName) => {
-        return value.trim().length > 0 ? null : `${fieldName} cannot be empty.`;
+        if (typeof value === 'string' && value.trim() === '') {
+            return `${fieldName} is required.`;
+        } else if (value === null || value === undefined || (typeof value === 'number' && isNaN(value))) {
+            return `${fieldName} is required.`;
+        } else if (typeof value === 'object' && Object.keys(value).length === 0) {
+            return `${fieldName} is required.`;
+        }
+        return null;
     };
 
     const validatePassword = (password) => {
@@ -17,10 +24,15 @@ export const useValidator = () => {
         return password === confirmPassword ? null : "Passwords do not match.";
     };
 
+    const validateAddress = (isAddressValid) => {
+        return isAddressValid === isAddressValid ? false : "Please select a valid location from the dropdown.";
+    };
+
     return {
         validateEmail,
         validateNotEmpty,
         validatePassword,
-        confirmPassword
+        confirmPassword,
+        validateAddress
     };
 };
