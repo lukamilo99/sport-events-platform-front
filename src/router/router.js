@@ -6,7 +6,7 @@ import OAuthRedirect from "@/views/OAuthRedirect.vue";
 import Profile from "@/views/ProfileView.vue";
 import CreateEvent from "@/views/CreateEventView.vue";
 import Events from "@/views/EventsView.vue";
-import {store} from "@/store/store";
+import {useStore} from "vuex";
 
 const routes = [
     {
@@ -71,8 +71,12 @@ const routes = [
         path: '/events',
         name: 'events',
         component: Events,
-        meta: {
-            requiresAuth: false
+        beforeEnter: (to, from, next) => {
+            if (!to.query.page) {
+                next({ path: '/events', query: { ...to.query, page: '1' } });
+            } else {
+                next();
+            }
         }
     }
 ];
@@ -82,13 +86,26 @@ const router = createRouter({
     routes,
 });
 
+router.beforeEach(async (to, from, next) => {
+    const store = useStore();
+    try {
+        if (to.path.includes('/oauth2/authorize') || to.path.includes('/auth/login')) {
+            await store.dispatch('setCurrentRoute', to.fullPath);
+        }
+        next();
+    } catch (error) {
+        console.error("Error setting current route: ", error);
+    }
+});
+
 router.beforeEach((to, from, next) => {
+    const store = useStore();
     if (to.meta.requiresAuth) {
-        if (!store.state.user) {
+        if (!store.getters['user']) {
             next('/login');
         } else {
             if (to.meta.roles && to.meta.roles.length > 0) {
-                if (to.meta.roles.includes(store.state.user.role)) {
+                if (to.meta.roles.includes(store.getters['user'].role)) {
                     next();
                 } else {
                     next('/no-permission');
@@ -99,17 +116,6 @@ router.beforeEach((to, from, next) => {
         }
     } else {
         next();
-    }
-});
-
-router.beforeEach(async (to, from, next) => {
-    try {
-        if (to.path.includes('/oauth2/authorize') || to.path.includes('/auth/login')) {
-            await store.dispatch('setCurrentRoute', to.fullPath);
-        }
-        next();
-    } catch (error) {
-        console.error("Error setting current route: ", error);
     }
 });
 

@@ -14,50 +14,55 @@
       <input v-model="email" type="email" id="email" :disabled="isOAuthUser">
     </div>
     <button @click="updateProfile">Update Profile</button>
-    <p class="error-text">{{ updateError }}</p>
+    <NotificationComponent/>
   </div>
 </template>
 
 <script>
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useValidator } from '@/validator/validator';
+import NotificationComponent from "@/components/NotificationComponent.vue";
 
 export default {
+  components: {
+    NotificationComponent
+  },
   setup() {
     const store = useStore();
     const { validateEmail, validateNotEmpty } = useValidator();
-
-    const user = computed(() => store.state.user);
-
+    const user = computed(() => store.getters['user']);
+    const isOAuthUser = ref(user.value.oauth);
     const firstname = ref(user.value.firstname);
     const lastname = ref(user.value.lastname);
     const email = ref(user.value.email);
-    const updateError = ref('');
-    const isOAuthUser = computed(() => user.value.oauth);
 
-    watch(user, (newVal) => {
-      firstname.value = newVal.firstname;
-      lastname.value = newVal.lastname;
-      email.value = newVal.email;
-    });
 
     const validateUpdate = () => {
       const firstnameError = validateNotEmpty(firstname.value, "Firstname");
       if (firstnameError) {
-        updateError.value = firstnameError;
+        store.dispatch('addNotification', {
+          type: 'error',
+          message: firstnameError
+        });
         return false;
       }
 
       const lastnameError = validateNotEmpty(lastname.value, "Lastname");
       if (lastnameError) {
-        updateError.value = lastnameError;
+        store.dispatch('addNotification', {
+          type: 'error',
+          message: lastnameError
+        });
         return false;
       }
 
       const emailError = validateEmail(email.value);
       if (emailError) {
-        updateError.value = emailError;
+        store.dispatch('addNotification', {
+          type: 'error',
+          message: emailError
+        });
         return false;
       }
       return true;
@@ -72,7 +77,15 @@ export default {
           lastname: lastname.value,
           email: email.value
         });
+        await store.dispatch('addNotification', {
+          type: 'success',
+          message: 'Profile updated successfully!'
+        });
       } catch (e) {
+        await store.dispatch('addNotification', {
+          type: 'error',
+          message: 'Failed to update profile.'
+        });
         console.log("Update error:", e);
       }
     };
@@ -82,7 +95,6 @@ export default {
       firstname,
       lastname,
       email,
-      updateError,
       isOAuthUser,
       updateProfile
     };
@@ -98,29 +110,6 @@ export default {
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-div {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
   box-sizing: border-box;
 }
 

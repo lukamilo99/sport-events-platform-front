@@ -86,11 +86,21 @@ export default {
   border-radius: 8px;
   overflow: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .map-container {
-  height: calc(100% - 50px);
+  height: calc(100% - 70px);
   width: 100%;
   overflow: hidden;
+  flex: 1;
 }
+
+button {
+  padding: 10px 20px;
+}
+
 </style>

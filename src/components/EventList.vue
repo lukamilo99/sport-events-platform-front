@@ -84,11 +84,10 @@ export default {
   border: 1px solid #e0e0e0;
   padding: 15px;
   border-radius: 5px;
-}
-
-.no-events {
-  grid-column: span 3;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .map-btn {
@@ -96,13 +95,15 @@ export default {
   cursor: pointer;
   padding: 5px 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 25px;
   background-color: #007BFF;
   color: white;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
 .map-btn:hover {
   background-color: #0056b3;
+  transform: scale(1.05);
 }
 </style>
 

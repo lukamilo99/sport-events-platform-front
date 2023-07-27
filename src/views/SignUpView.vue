@@ -8,10 +8,10 @@
     <input v-model="repeatedPassword" type="password" placeholder="Confirm Password">
     <button @click="register" class="register-btn">Register</button>
     <button @click="googleRegister" class="google-register-btn">
-      <img src="src/assets/google.png" alt="Google" class="google-icon"> Register using Google account
+      <img src="google.png" alt="Google" class="google-icon"> Google
     </button>
     <p>Already have an account? <router-link to="/login">Login</router-link></p>
-    <p class="error-text">{{ signUpError }}</p>
+    <NotificationComponent class="notification-component-class"/>
   </div>
 </template>
 
@@ -20,8 +20,10 @@ import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { useValidator } from '@/validator/validator';
+import NotificationComponent from "@/components/NotificationComponent.vue";
 
 export default {
+  components: {NotificationComponent},
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -32,38 +34,35 @@ export default {
     const email = ref('');
     const password = ref('');
     const repeatedPassword = ref('');
-    const signUpError = ref('');
 
     const validateSignUp = () => {
-      signUpError.value = '';
-
       const firstnameError = validateNotEmpty(firstname.value, "Firstname");
       if (firstnameError) {
-        signUpError.value = firstnameError;
+        store.dispatch('addNotification', { message: firstnameError, type: 'error' });
         return false;
       }
 
       const lastnameError = validateNotEmpty(lastname.value, "Lastname");
       if (lastnameError) {
-        signUpError.value = lastnameError;
+        store.dispatch('addNotification', { message: lastnameError, type: 'error' });
         return false;
       }
 
       const emailError = validateEmail(email.value);
       if (emailError) {
-        signUpError.value = emailError;
+        store.dispatch('addNotification', { message: emailError, type: 'error' });
         return false;
       }
 
       const passwordError = validatePassword(password.value);
       if (passwordError) {
-        signUpError.value = passwordError;
+        store.dispatch('addNotification', { message: passwordError, type: 'error' });
         return false;
       }
 
       const confirmError = confirmPassword(password.value, repeatedPassword.value);
       if (confirmError) {
-        signUpError.value = confirmError;
+        store.dispatch('addNotification', { message: confirmError, type: 'error' });
         return false;
       }
 
@@ -83,6 +82,7 @@ export default {
         });
         await router.push('/login');
       } catch (error) {
+        await store.dispatch('addNotification', {message: 'Error during registration.', type: 'error'});
         console.error(error);
       }
     };
@@ -92,6 +92,7 @@ export default {
         await store.dispatch('googleLogin');
         await router.push('/login');
       } catch (error) {
+        await store.dispatch('addNotification', {message: 'Error during Google registration.', type: 'error'});
         console.error(error);
       }
     };
@@ -102,7 +103,6 @@ export default {
       email,
       password,
       repeatedPassword,
-      signUpError,
       register,
       googleRegister
     };
@@ -121,42 +121,25 @@ export default {
   box-sizing: border-box;
 }
 
-h1 {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-button {
+.register-btn, .google-register-btn {
+  background-color: #28a745;
+  color: #fff;
+  display: block;
   width: 80%;
+  margin: 10px auto;
   padding: 0.4rem 0.8rem;
-  border: none;
   border-radius: 25px;
-  background-color: #007bff;
-  color: white;
-  font-size: 0.9rem;
+  text-align: center;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
-  margin: 10px auto;
-  display: block;
 }
 
-button:hover {
-  transform: scale(1.05);
-  background-color: #0056b3;
+.register-btn:hover {
+  background-color: #217c3b;
 }
 
 .google-register-btn {
   background-color: #dc3545;
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,11 +156,11 @@ button:hover {
   vertical-align: middle;
 }
 
-.error-text {
-  color: red;
-  font-size: 0.9rem;
-  margin-top: 5px;
+p {
   text-align: center;
 }
 
+.notification-component-class {
+
+}
 </style>

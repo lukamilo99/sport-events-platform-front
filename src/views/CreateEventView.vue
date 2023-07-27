@@ -250,44 +250,6 @@ export default {
   box-sizing: border-box;
 }
 
-h2 {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-div {
-  margin-bottom: 15px;
-  width: 100%;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-input, VueDatePicker {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-button {
-  width: 80%;
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 25px;
-  background-color: #28a745;
-  color: white;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-  margin: 10px auto;
-  display: block;
-}
-
 .dropdown {
   max-height: 150px;
   overflow-y: auto;
@@ -312,15 +274,12 @@ button {
   cursor: pointer;
   text-decoration: underline;
   transition: color 0.3s;
+  display: block;
+  margin-top: 10px;
 }
 
 .choose-map-link:hover {
   color: #0056b3;
-}
-
-button:hover {
-  transform: scale(1.05);
-  background-color: #217c3b;
 }
 
 .confirmation-message {
@@ -329,8 +288,7 @@ button:hover {
   border: 1px solid #c3e6cb;
   padding: 10px;
   border-radius: 5px;
-  margin-bottom: 15px;
+  margin-top: 15px;
   text-align: center;
 }
 </style>
-
