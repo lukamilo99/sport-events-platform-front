@@ -53,6 +53,7 @@ export default {
     },
     getters: {
         user: state => state.user,
+        userId: state => state.user ? state.user.id : null,
         currentRoute: state => state.currentRoute
     }
 };

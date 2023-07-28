@@ -4,15 +4,15 @@
       <h2 class="section-title">Find Your Event</h2>
       <div class="search-wrapper">
         <input v-model="searchQuery" placeholder="Search by event name" @input="updateSearch" />
-        <select v-model="selectedCity" @change="updateSearch">
+        <select v-model="selectedCity" @change="updateSearch(true)">
           <option value="" disabled>City</option>
           <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
         </select>
-        <select v-model="selectedSport" @change="updateSearch">
+        <select v-model="selectedSport" @change="updateSearch(true)">
           <option value="" disabled>Sport</option>
           <option v-for="sport in sports" :key="sport" :value="sport">{{ sport }}</option>
         </select>
-        <select v-model="selectedDay" @change="updateSearch">
+        <select v-model="selectedDay" @change="updateSearch(true)">
           <option value="" disabled>Day</option>
           <option value="today">Today</option>
           <option value="next5days">1-5 days</option>
@@ -22,12 +22,12 @@
         <button @click="resetFilters" class="reset-btn">Reset Filters</button>
       </div>
     </section>
-
     <section class="events-section">
       <h2 class="section-title">Results</h2>
       <div class="events-list-container">
-        <EventList :events="events" />
-        <div class="pagination-controls">
+        <EventList v-if="events.length" :events="events" />
+        <p v-else class="no-results">No results</p>
+        <div class="pagination-controls" v-if="events.length">
           <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
           <span>Page {{ currentPage }} of {{ totalPageCount }}</span>
           <button @click="nextPage" :disabled="currentPage === totalPageCount">Next</button>
@@ -85,7 +85,7 @@ export default {
       }
     };
 
-    const updateSearch = () => {
+    const updateSearch = (resetPage = false) => {
       let queryParams = {};
 
       if (searchQuery.value) {
@@ -101,6 +101,10 @@ export default {
         queryParams.day = customDay.value;
       } else if (selectedDay.value) {
         queryParams.day = selectedDay.value;
+      }
+
+      if (resetPage) {
+        currentPage.value = 1;
       }
 
       router.push({
@@ -253,5 +257,12 @@ export default {
 .pagination-controls button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.no-results {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #888;
+  margin-top: 20px;
 }
 </style>

@@ -1,10 +1,10 @@
 <template>
   <div class="events-grid">
     <div v-for="event in events" :key="event.id" class="event-item">
-      <h3>{{ event.name }}</h3>
+      <router-link :to="`/event/${event.name}/${event.id}`" class="event-title">{{ event.name }}</router-link>
       <p><span class="sport-icon">{{ getSportIcon(event.sport) }}</span> {{ event.sport }}</p>
       <p><span class="date-icon">📅</span> {{ formatDate(event.date) }}</p>
-      <p><span class="location-icon">📍</span> {{ event.streetName }}</p>
+      <p><span class="location-icon">📍</span> {{ event.streetName }}, {{ event.city }}</p>
       <button @click="showMap(event.coordinatesLat, event.coordinatesLon)" class="map-btn">🗺️ Show on map</button>
     </div>
     <EventMap
@@ -104,6 +104,17 @@ export default {
 .map-btn:hover {
   background-color: #0056b3;
   transform: scale(1.05);
+}
+
+.event-title {
+  font-size: 1.5rem;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.event-title:hover {
+  color: #007BFF;
 }
 </style>
 

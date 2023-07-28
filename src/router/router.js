@@ -6,6 +6,7 @@ import OAuthRedirect from "@/views/OAuthRedirect.vue";
 import Profile from "@/views/ProfileView.vue";
 import CreateEvent from "@/views/CreateEventView.vue";
 import Events from "@/views/EventsView.vue";
+import EventDetails from "@/views/EventDetailsView.vue"
 import {useStore} from "vuex";
 
 const routes = [
@@ -62,6 +63,15 @@ const routes = [
         path: '/create-event',
         name: 'createEvent',
         component: CreateEvent,
+        meta: {
+            requiresAuth: true,
+            roles: ['ADMIN', 'USER']
+        }
+    },
+    {
+        path: '/event/:eventName/:eventId',
+        name: 'EventDetails',
+        component: EventDetails,
         meta: {
             requiresAuth: true,
             roles: ['ADMIN', 'USER']

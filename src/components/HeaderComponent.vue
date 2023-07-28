@@ -29,7 +29,7 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    const isLoggedIn = computed(() => store.state.user !== null);
+    const isLoggedIn = computed(() => store.state.user.user !== null);
     const showProfileMenu = ref(false);
 
     const logout = async () => {
