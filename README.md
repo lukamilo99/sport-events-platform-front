@@ -1,4 +1,4 @@
-### Sport Events Platform - frontend 
+# Sport Events Platform - frontend 
 
 This is a frontend interface and part of a full-stack application ([backend](https://github.com/lukamilo99/sport-connecting-people)), designed to help users to find sports activities across different cities. It enables users to discover, create, and join sports events across various cities. 
 
