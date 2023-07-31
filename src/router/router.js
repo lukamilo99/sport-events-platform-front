@@ -3,8 +3,10 @@ import Login from '../views/LoginView.vue';
 import Register from '../views/SignUpView.vue';
 import Home from "@/views/HomeView.vue";
 import OAuthRedirect from "@/views/OAuthRedirect.vue";
-import Profile from "@/views/ProfileView.vue";
+import MyProfile from "@/views/MyProfileView.vue";
+import MyEvents from "@/views/MyEventsView.vue";
 import CreateEvent from "@/views/CreateEventView.vue";
+import EditEvent from "@/views/EditEventView.vue";
 import Events from "@/views/EventsView.vue";
 import EventDetails from "@/views/EventDetailsView.vue"
 import {useStore} from "vuex";
@@ -51,9 +53,18 @@ const routes = [
         }
     },
     {
-        path: '/profile',
-        name: 'profile',
-        component: Profile,
+        path: '/profile/my-profile',
+        name: 'myProfile',
+        component: MyProfile,
+        meta: {
+            requiresAuth: true,
+            roles: ['ADMIN', 'USER']
+        }
+    },
+    {
+        path: '/profile/my-events',
+        name: 'myEvents',
+        component: MyEvents,
         meta: {
             requiresAuth: true,
             roles: ['ADMIN', 'USER']
@@ -69,8 +80,17 @@ const routes = [
         }
     },
     {
+        path: '/edit-event',
+        name: 'editEvent',
+        component: EditEvent,
+        meta: {
+            requiresAuth: true,
+            roles: ['ADMIN', 'USER']
+        }
+    },
+    {
         path: '/event/:eventName/:eventId',
-        name: 'EventDetails',
+        name: 'eventDetails',
         component: EventDetails,
         meta: {
             requiresAuth: true,

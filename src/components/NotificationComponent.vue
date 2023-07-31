@@ -83,5 +83,4 @@ export default {
   color: #2196f3;
   border: 1px solid #2196f3;
 }
-
 </style>

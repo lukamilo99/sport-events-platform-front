@@ -52,7 +52,7 @@ export default {
     };
 
     const goToProfile = () => {
-      router.push('/profile');
+      router.push('/profile/my-profile');
     };
 
     return {

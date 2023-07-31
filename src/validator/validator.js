@@ -9,8 +9,6 @@ export const useValidator = () => {
             return `${fieldName} is required.`;
         } else if (value === null || value === undefined || (typeof value === 'number' && isNaN(value))) {
             return `${fieldName} is required.`;
-        } else if (typeof value === 'object' && Object.keys(value).length === 0) {
-            return `${fieldName} is required.`;
         }
         return null;
     };

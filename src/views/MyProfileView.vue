@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <ProfileNavigationComponent />
     <h2>Profile</h2>
     <div>
       <label for="firstname">First Name:</label>
@@ -23,9 +24,11 @@ import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useValidator } from '@/validator/validator';
 import NotificationComponent from "@/components/NotificationComponent.vue";
+import ProfileNavigationComponent from "@/components/ProfileNavigationComponent.vue";
 
 export default {
   components: {
+    ProfileNavigationComponent,
     NotificationComponent
   },
   setup() {
@@ -36,7 +39,6 @@ export default {
     const firstname = ref(user.value.firstname);
     const lastname = ref(user.value.lastname);
     const email = ref(user.value.email);
-
 
     const validateUpdate = () => {
       const firstnameError = validateNotEmpty(firstname.value, "Firstname");

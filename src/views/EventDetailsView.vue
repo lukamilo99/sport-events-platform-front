@@ -1,23 +1,40 @@
 <template>
   <div class="event-details-container">
     <div v-if="eventDetails" class="event-item">
-      <h2 class="event-title">{{ eventDetails.name }}</h2>
+      <div class="header-container">
+        <div class="header-div"></div>
+
+        <div class="header-div">
+          <h2 class="event-title">{{ eventDetails.name }}</h2>
+        </div>
+
+        <div class="header-div action-buttons">
+          <button v-if="canJoinEvent" @click="joinEvent" class="action-btn">Join Event</button>
+          <button v-if="canLeaveEvent" @click="leaveEvent" class="action-btn">Leave Event</button>
+          <button v-if="isEventCreator" @click="deleteEvent" class="action-btn">Delete Event</button>
+        </div>
+      </div>
+
       <p><span class="sport-icon">{{ getSportIcon(eventDetails.sport) }}</span> {{ eventDetails.sport }}</p>
       <p><span class="date-icon">📅</span> {{ formatDate(eventDetails.date) }}</p>
       <p><span class="location-icon">📍</span> {{ eventDetails.streetName }}, {{ eventDetails.city }}</p>
       <p>Capacity: {{ eventDetails.capacity }}</p>
       <p>Available Spots: {{ eventDetails.availableSpots }}</p>
       <p>Event Creator: {{ eventDetails.eventCreator.name }}</p>
-      <ul>
-        <li v-for="participant in eventDetails.participants" :key="participant.id">
-          {{ participant.name }}
-        </li>
-      </ul>
-      <button v-if="canJoinEvent" @click="joinEvent">Join Event</button>
-      <button v-if="canLeaveEvent" @click="leaveEvent">Leave Event</button>
-      <button v-if="isEventCreator" @click="deleteEvent">Delete Event</button>
-      <button @click="showMap(eventDetails.coordinatesLat, eventDetails.coordinatesLon)" class="map-btn">🗺️ Show on map</button>
+
+      <div class="participants-dropdown" @click="toggleParticipantsList">
+        Participants ({{ participantCount }})
+        <div v-if="showParticipantsList" class="participants-list">
+          <div v-for="participant in eventDetails.participants" :key="participant.id" class="participant-item">
+            {{ participant.name }}
+            <button v-if="isEventCreator" @click="removeParticipant(participant.id)" class="remove-btn">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <button @click="showMap(eventDetails.coordinatesLat, eventDetails.coordinatesLon)" class="action-btn map-btn">🗺️ Show on map</button>
     </div>
+
     <EventMap
         :mode="'view'"
         v-if="showMapModal"
@@ -39,7 +56,7 @@ import EventMap from "@/components/EventMap.vue";
 import router from "@/router/router";
 
 export default {
-  components: {EventMap},
+  components: { EventMap },
   setup() {
     const route = useRoute();
     const store = useStore();
@@ -47,13 +64,15 @@ export default {
     const showMapModal = ref(false);
     const currentLat = ref(null);
     const currentLon = ref(null);
+    const showParticipantsList = ref(false);
 
     const userId = computed(() => store.getters.userId);
 
     const isEventCreator = computed(() => eventDetails.value && eventDetails.value.eventCreator.id === userId.value);
     const isParticipant = computed(() => eventDetails.value && eventDetails.value.participants.some(p => p.id === userId.value));
-    const canJoinEvent = computed(() => !isEventCreator.value && !isParticipant.value);
-    const canLeaveEvent = computed(() => !isEventCreator.value && isParticipant.value);
+    const canJoinEvent = computed(() =>  !isParticipant.value);
+    const canLeaveEvent = computed(() => isParticipant.value);
+    const participantCount = computed(() => eventDetails.value.participants.length);
 
     const fetchEventDetails = async () => {
       const eventId = route.params.eventId;
@@ -84,6 +103,10 @@ export default {
       return `${day}.${month}.${year} ${hour}:${minute.toString().padStart(2, '0')}`;
     };
 
+    const toggleParticipantsList = () => {
+      showParticipantsList.value = !showParticipantsList.value;
+    };
+
     const showMap = (lat, lon) => {
       currentLat.value = lat;
       currentLon.value = lon;
@@ -106,7 +129,6 @@ export default {
         await axios.post(`http://localhost:8081/event/leave/${eventId}`);
         await fetchEventDetails();
       } catch (error) {
-
         console.error("Error leaving event:", error);
       }
     };
@@ -121,6 +143,16 @@ export default {
       }
     };
 
+    const removeParticipant = async (participantId) => {
+      const eventId = route.params.eventId;
+      try {
+        await axios.delete(`http://localhost:8081/event/remove/${eventId}/${participantId}`);
+        await fetchEventDetails();
+      } catch (error) {
+        console.error("Error removing participant:", error);
+      }
+    };
+
     return {
       eventDetails,
       getSportIcon,
@@ -129,56 +161,126 @@ export default {
       showMapModal,
       currentLat,
       currentLon,
+      participantCount,
       joinEvent,
       leaveEvent,
       deleteEvent,
-      isEventCreator,
+      removeParticipant,
       canJoinEvent,
-      canLeaveEvent
+      canLeaveEvent,
+      isEventCreator,
+      showParticipantsList,
+      toggleParticipantsList
     };
   }
 }
 </script>
 
 <style scoped>
+.event-details-container,
+.event-item {
+  text-align: center;
+}
+
 .event-details-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 100px auto;
+  max-width: 600px;
 }
 
 .event-item {
+  padding: 20px;
   border: 1px solid #e0e0e0;
-  padding: 15px;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.event-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 20px;
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-div {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-buttons {
+  justify-content: flex-end;
+}
+
+.action-btn, .map-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 0 5px;
+  background-color: #007bff;
+  color: #fff;
+}
+
+.action-btn:hover, .map-btn:hover {
+  background-color: #0056b3;
 }
 
 .map-btn {
-  margin-top: 10px;
-  cursor: pointer;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 25px;
-  background-color: #007BFF;
-  color: white;
-  transition: background-color 0.3s, transform 0.3s;
+  display: block;
+  margin: 20px auto 0;
 }
 
-.map-btn:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
+.participants-dropdown {
+  position: relative;
+  cursor: pointer;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  background-color: #ffffff;
+  transition: background-color 0.3s;
+}
+
+.participants-dropdown:hover {
+  background-color: #f7f7f7;
+}
+
+.participants-list {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  margin-top: 5px;
+  z-index: 10;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.participant-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.remove-btn {
+  margin-left: 10px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 3px 7px;
+  font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.remove-btn:hover {
+  background-color: #c82333;
 }
 </style>
