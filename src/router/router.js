@@ -9,6 +9,8 @@ import CreateEvent from "@/views/CreateEventView.vue";
 import EditEvent from "@/views/EditEventView.vue";
 import Events from "@/views/EventsView.vue";
 import EventDetails from "@/views/EventDetailsView.vue"
+import NotFound from "@/views/NotFoundView.vue"
+
 import {useStore} from "vuex";
 
 const routes = [
@@ -80,12 +82,19 @@ const routes = [
         }
     },
     {
-        path: '/edit-event',
+        path: '/edit-event/:eventId',
         name: 'editEvent',
         component: EditEvent,
         meta: {
             requiresAuth: true,
             roles: ['ADMIN', 'USER']
+        },
+        beforeEnter: (to, from, next) => {
+            if (!to.params.eventId) {
+                next({ path: '/not-found' });
+            } else {
+                next();
+            }
         }
     },
     {
@@ -108,6 +117,11 @@ const routes = [
                 next();
             }
         }
+    },
+    {
+        path: '/not-found',
+        name: 'notFound',
+        component: NotFound
     }
 ];
 

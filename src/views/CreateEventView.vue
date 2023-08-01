@@ -19,6 +19,7 @@ export default {
   setup() {
     const createEvent = async (eventData) => {
       try {
+        delete eventData.id;
         await axios.post('http://localhost:8081/event/create', eventData);
         await store.dispatch('addNotification', {
           type: 'success',

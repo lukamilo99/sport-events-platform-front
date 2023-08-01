@@ -14,7 +14,7 @@
     <ul v-if="currentEvents.length">
       <li v-for="event in currentEvents" :key="event.id">
         {{ event.name }}
-        <button v-if="currentView === 'created'" @click="editEvent(event)">Edit</button>
+        <button v-if="currentView === 'created'" @click="editEvent(event.id)">Edit</button>
         <button v-if="currentView === 'created'" @click="deleteEvent(event.id)">Delete</button>
         <button v-if="currentView === 'participating'" @click="leaveEvent(event.id)">Leave</button>
       </li>
@@ -34,12 +34,10 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import ProfileNavigationComponent from "@/components/ProfileNavigationComponent.vue";
-import { useStore } from 'vuex';
 
 export default {
   components: { ProfileNavigationComponent },
   setup() {
-    const store = useStore()
     const router = useRouter();
     const events = ref([]);
     const currentPage = ref(1);
@@ -83,9 +81,8 @@ export default {
       }
     };
 
-    const editEvent = (event) => {
-      store.dispatch('selectEvent', event);
-      router.push('/edit-event');
+    const editEvent = (eventId) => {
+      router.push(`/edit-event/${eventId}`);
     };
 
     const deleteEvent = async (eventId) => {

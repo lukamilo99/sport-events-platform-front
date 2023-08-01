@@ -17,7 +17,7 @@
 
       <p><span class="sport-icon">{{ getSportIcon(eventDetails.sport) }}</span> {{ eventDetails.sport }}</p>
       <p><span class="date-icon">📅</span> {{ formatDate(eventDetails.date) }}</p>
-      <p><span class="location-icon">📍</span> {{ eventDetails.streetName }}, {{ eventDetails.city }}</p>
+      <p><span class="location-icon">📍</span> {{ eventDetails.location.formattedAddress }} </p>
       <p>Capacity: {{ eventDetails.capacity }}</p>
       <p>Available Spots: {{ eventDetails.availableSpots }}</p>
       <p>Event Creator: {{ eventDetails.eventCreator.name }}</p>
@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <button @click="showMap(eventDetails.coordinatesLat, eventDetails.coordinatesLon)" class="action-btn map-btn">🗺️ Show on map</button>
+      <button @click="showMap(eventDetails.location.coordinates[1], eventDetails.location.coordinates[0])" class="action-btn map-btn">🗺️ Show on map</button>
     </div>
 
     <EventMap
@@ -77,7 +77,7 @@ export default {
     const fetchEventDetails = async () => {
       const eventId = route.params.eventId;
       try {
-        const response = await axios.get(`http://localhost:8081/event/${eventId}`);
+        const response = await axios.get(`http://localhost:8081/event/details/${eventId}`);
         eventDetails.value = response.data;
       } catch (error) {
         console.error("Error fetching event details:", error);

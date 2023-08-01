@@ -1,6 +1,6 @@
 <template>
   <div class="form-container">
-    <form @submit.stop.prevent="handleSubmit">
+    <form @submit.stop.prevent="handleSubmit" novalidate>
       <div>
         <label for="eventName">Name:</label>
         <input id="eventName" type="text" v-model="event.name" required />
@@ -15,20 +15,21 @@
       </div>
       <div>
         <label for="eventDate">Date and Time:</label>
-        <VueDatePicker id="eventDate" v-model="event.date" format="dd-MM-yyyy HH:mm" datetime></VueDatePicker>
+        <VueDatePicker class="my-datepicker" id="eventDate" v-model="event.date" format="dd-MM-yyyy HH:mm" datetime></VueDatePicker>
       </div>
       <div>
         <label for="locationSearch">Location:</label>
         <input id="locationSearch" type="text" v-model="locationQuery" @input="searchLocations" />
         <div v-if="locations.length" class="dropdown">
-          <div v-for="location in locations" :key="location.formatted" @click="selectLocation(location)">
-            {{ location.formatted }}
+          <div v-for="location in locations" :key="location.formattedAddress" @click="selectLocation(location)">
+            {{ location.formattedAddress }}
           </div>
         </div>
+        <span @click.prevent="toggleMap" class="choose-map-link">Choose on map</span>
       </div>
-      <span @click.prevent="toggleMap" class="choose-map-link">Choose on map</span>
+
       <EventMap
-          :mode="mode"
+          :mode="'create'"
           :initialLocation="initialLocation"
           :markerLocation="event.location.coordinates"
           :showMap="showMap"
@@ -50,7 +51,7 @@ import EventMap from "@/components/EventMap.vue";
 import NotificationComponent from "@/components/NotificationComponent.vue";
 import axios from "axios";
 import {store} from "@/store/store";
-import {computed, ref} from 'vue';
+import { ref, watch} from 'vue';
 import { debounce } from 'lodash';
 import {useValidator} from "@/validator/validator";
 
@@ -64,18 +65,33 @@ export default {
     mode: {
       type: String,
       default: 'create'
+    },
+    initialEvent: {
+      type: Object,
+      default: () => ({
+        name: '',
+        capacity: '',
+        sport: '',
+        date: '',
+        location: {
+          coordinates: [44.8125, 20.4612],
+          formattedAddress: ''
+        }
+      })
     }
+
   },
   setup(props, { emit }) {
-    const event = computed(() => store.getters.event);
-    const locationQuery = ref(event.value.location.formatted);
+    const event = ref(props.initialEvent);
+    const locationQuery = ref(event.value.location.formattedAddress);
     const locations = ref([]);
     const showMap = ref(false);
-    const initialLocation = [45.2671, 19.8335];
+    const initialLocation = event.value.location.coordinates;
+
     const { validateNotEmpty } = useValidator();
 
     const validateEvent = () => {
-      const nameError = validateNotEmpty(event.value.name);
+      const nameError = validateNotEmpty(event.value.name, "Name");
       if (nameError) {
         store.dispatch('addNotification', {
           type: 'error',
@@ -140,13 +156,13 @@ export default {
 
     const fetchLocationFromCoordinates = debounce(async () => {
       try {
-        const lat = event.value.location.coordinates[0];
-        const lon = event.value.location.coordinates[1];
+        const lat = event.value.location.coordinates[1];
+        const lon = event.value.location.coordinates[0];
         await axios.get('http://localhost:8081/geo/address',
             { params: { lat, lon } })
             .then(value => {
-              locationQuery.value = value.data.formatted;
-              event.value.location.formatted = value.data.formatted;
+              locationQuery.value = value.data.formattedAddress;
+              event.value.location.formattedAddress = value.data.formattedAddress;
               event.value.location.coordinates = value.data.coordinates;
             });
       } catch (error) {
@@ -168,22 +184,32 @@ export default {
     };
 
     const selectLocation = (location) => {
-      event.value.location.formatted = location.formatted;
+      event.value.location.formattedAddress = location.formattedAddress;
       event.value.location.coordinates = location.coordinates
-      locationQuery.value = location.formatted;
+      locationQuery.value = location.formattedAddress;
       locations.value = [];
     };
 
     const handleSubmit = () => {
       if (!validateEvent()) return;
       event.value.date = formatToISO(event.value.date);
-      console.log(event.value)
       emit('submit', event.value);
     };
 
     const formatToISO = (dateString) => {
       return dayjs(dateString).format('YYYY-MM-DDTHH:mm:ss');
     }
+
+    const formatToDatePicker = (isoDateString) => {
+      return dayjs(isoDateString).format('dd-MM-yyyy HH:mm');
+    }
+
+    watch(() => props.initialEvent, (newEvent) => {
+      if (newEvent && newEvent.date) {
+        event.value.date = formatToDatePicker(newEvent.date);
+      }
+    }, { immediate: true });
+
 
     return {
       event,

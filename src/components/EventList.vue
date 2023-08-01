@@ -4,8 +4,8 @@
       <router-link :to="`/event/${event.name}/${event.id}`" class="event-title">{{ event.name }}</router-link>
       <p><span class="sport-icon">{{ getSportIcon(event.sport) }}</span> {{ event.sport }}</p>
       <p><span class="date-icon">📅</span> {{ formatDate(event.date) }}</p>
-      <p><span class="location-icon">📍</span> {{ event.streetName }}, {{ event.city }}</p>
-      <button @click="showMap(event.coordinatesLat, event.coordinatesLon)" class="map-btn">🗺️ Show on map</button>
+      <p><span class="location-icon">📍</span> {{ event.location.formattedAddress }}</p>
+      <button @click="showMap(event.location.coordinates[1], event.location.coordinates[0])" class="map-btn">🗺️ Show on map</button>
     </div>
     <EventMap
         :mode="'view'"
