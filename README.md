@@ -12,19 +12,22 @@ This is a frontend interface and part of a full-stack application ([backend](htt
 
 ## Features
 
-1. **User Interface**:
+1. **User Interface:**
    - A simple and intuitive design for effortless user navigation and interaction.
    - Interactive elements such as maps and address autocompletion.
    
-2. **User Authentication**:
+2. **User Authentication:**
    - Offered both manual and OAuth2 Google login options.
    - Retained user sessions for a personalized experience.
-   
-3. **Error Handling**:
+  
+3. **Role-Based Access:**
+   - Implemented role-based views and actions, tailoring user experience based on assigned roles.
+ 
+4. **Error Handling:**
    - Application-wide notification component to provide feedback to users.
    - Input data validation on the frontend.
    
-4. **Performance Optimizations**:
+5. **Performance Optimizations:**
    - Practices like lazy loading were implemented to keep the app fast and responsive.
 
 ## Installation Guide
