@@ -72,7 +72,7 @@ export default {
 
     const fetchEvents = async (query = {}) => {
       try {
-        const response = await axios.get(`http://localhost:8081/event`, {
+        const response = await axios.get(`http://localhost:8081/event/search-events`, {
           params: {
             ...query,
             page: currentPage.value - 1

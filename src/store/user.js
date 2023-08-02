@@ -54,6 +54,7 @@ export default {
     getters: {
         user: state => state.user,
         userId: state => state.user ? state.user.id : null,
+        userRole: state => state.user ? state.user.role : null,
         currentRoute: state => state.currentRoute
     }
 };

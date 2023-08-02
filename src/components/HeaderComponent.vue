@@ -8,6 +8,7 @@
       <router-link :to="{ path: '/events', query: { page: '1' } }" class="nav-link">Events</router-link>
     </div>
     <div class="user-section">
+      <router-link v-if="isAdmin" to="/users" class="users-btn">Users</router-link>
       <div v-if="isLoggedIn">
         <button @click="toggleProfileMenu" class="profile-btn" tabindex="0" @blur="hideDropdown">Profile</button>
         <div v-if="showProfileMenu" class="profile-dropdown">
@@ -29,7 +30,10 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    const isLoggedIn = computed(() => store.state.user.user !== null);
+    const isLoggedIn = computed(() => store.getters.user !== null);
+    const isAdmin = computed(() => {
+      return isLoggedIn.value && store.getters.user.role === 'ADMIN';
+    });
     const showProfileMenu = ref(false);
 
     const logout = async () => {
@@ -61,7 +65,8 @@ export default {
       toggleProfileMenu,
       showProfileMenu,
       goToProfile,
-      hideDropdown
+      hideDropdown,
+      isAdmin
     };
   },
 };
@@ -75,12 +80,31 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 5%;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
+}
+
+button {
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.left-section, .user-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .app-title {
@@ -90,23 +114,32 @@ header {
   letter-spacing: 1px;
 }
 
+.app-title-link, .nav-link {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.app-title-link:hover, .nav-link:hover {
+  color: #ddd;
+}
+
+.nav-link {
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  background-color: transparent;
+  transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .user-section {
   display: flex;
   align-items: center;
   gap: 15px;
-}
-
-button, .login-btn {
-  padding: 0.5rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-button:hover, .login-btn:hover {
-  transform: scale(1.05);
 }
 
 .profile-btn {
@@ -116,19 +149,6 @@ button:hover, .login-btn:hover {
 
 .profile-btn:hover {
   background-color: #0056b3;
-}
-
-.login-btn {
-  background-color: #28a745;
-  color: #fff;
-  text-decoration: none;
-  display: inline-block;
-  vertical-align: middle;
-  padding: 0.5rem 1.5rem;
-}
-
-.login-btn:hover {
-  background-color: #217c3b;
 }
 
 .profile-dropdown {
@@ -152,31 +172,17 @@ button:hover, .login-btn:hover {
   text-align: left;
 }
 
-.left-section {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.app-title-link, .nav-link {
+.login-btn, .users-btn {
+  background-color: #28a745;
   color: #fff;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-.app-title-link:hover, .nav-link:hover {
-  color: #ddd;
-}
-
-.nav-link {
-  font-size: 1.2rem;
-  padding: 0.5rem 1rem;
   border-radius: 25px;
-  background-color: transparent;
-  transition: background-color 0.3s;
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+  padding: 0.5rem 1.5rem;
 }
 
-.nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.login-btn:hover, .users-btn:hover {
+  background-color: #217c3b;
 }
 </style>

@@ -9,6 +9,7 @@ import CreateEvent from "@/views/CreateEventView.vue";
 import EditEvent from "@/views/EditEventView.vue";
 import Events from "@/views/EventsView.vue";
 import EventDetails from "@/views/EventDetailsView.vue"
+import User from "@/views/UsersView.vue"
 import NotFound from "@/views/NotFoundView.vue"
 
 import {useStore} from "vuex";
@@ -113,6 +114,22 @@ const routes = [
         beforeEnter: (to, from, next) => {
             if (!to.query.page) {
                 next({ path: '/events', query: { ...to.query, page: '1' } });
+            } else {
+                next();
+            }
+        }
+    },
+    {
+        path: '/users',
+        name: 'users',
+        component: User,
+        meta: {
+            requiresAuth: true,
+            roles: ['ADMIN', 'USER']
+        },
+        beforeEnter: (to, from, next) => {
+            if (!to.query.page) {
+                next({ path: '/users', query: { ...to.query, page: '1' } });
             } else {
                 next();
             }
