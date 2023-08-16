@@ -1,11 +1,17 @@
 <template>
-  <div class="events-grid">
-    <div v-for="event in events" :key="event.id" class="event-item">
-      <router-link :to="`/event/${event.name}/${event.id}`" class="event-title">{{ event.name }}</router-link>
-      <p><span class="sport-icon">{{ getSportIcon(event.sport) }}</span> {{ event.sport }}</p>
-      <p><span class="date-icon">📅</span> {{ formatDate(event.date) }}</p>
-      <p><span class="location-icon">📍</span> {{ event.location.formattedAddress }}</p>
-      <button @click="showMap(event.location.coordinates[1], event.location.coordinates[0])" class="map-btn">🗺️ Show on map</button>
+  <div class="container">
+    <div class="row">
+      <div v-for="event in events" :key="event.id" class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+          <router-link :to="`/event/${event.name}/${event.id}`" class="event-title card-title">{{ event.name }}</router-link>
+            <p class="card-text"><span class="sport-icon">{{ getSportIcon(event.sport) }}</span> {{ event.sport }}</p>
+            <p class="card-text"><span class="date-icon">📅</span> {{ formatDate(event.date) }}</p>
+            <p class="card-text"><span class="location-icon">📍</span> {{ event.location.formattedAddress }}</p>
+            <button @click="showMap(event.location.coordinates[1], event.location.coordinates[0])" class="btn btn-primary">🗺️ Show on map</button>
+          </div>
+        </div>
+      </div>
     </div>
     <EventMap
         :mode="'view'"
@@ -74,48 +80,31 @@ export default {
 </script>
 
 <style scoped>
-.events-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.event-item {
-  border: 1px solid #e0e0e0;
-  padding: 15px;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.map-btn {
-  margin-top: 10px;
-  cursor: pointer;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 25px;
-  background-color: #007BFF;
-  color: white;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-.map-btn:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-
 .event-title {
-  font-size: 1.5rem;
   color: inherit;
   text-decoration: none;
+  font-size: 1.8em;
+  font-weight: bold;
   transition: color 0.3s;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.event-title:hover {
-  color: #007BFF;
+.card-text {
+  font-size: 1.1em;
+  margin: 10px 0;
+}
+
+.sport-icon,
+.date-icon,
+.location-icon {
+  margin-right: 10px;
+}
+
+.btn.btn-primary {
+  margin-top: 20px;
 }
 </style>
+
 
 

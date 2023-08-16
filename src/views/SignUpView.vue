@@ -1,19 +1,30 @@
 <template>
   <div class="register container">
-    <h2>Register</h2>
-    <input v-model="firstname" type="text" placeholder="First Name">
-    <input v-model="lastname" type="text" placeholder="Last Name">
-    <input v-model="email" type="email" placeholder="Email">
-    <input v-model="password" type="password" placeholder="Password">
-    <input v-model="repeatedPassword" type="password" placeholder="Confirm Password">
-    <button @click="register" class="register-btn">Register</button>
-    <button @click="googleRegister" class="google-register-btn">
-      <img src="google.png" alt="Google" class="google-icon"> Google
+    <h2 class="mb-4">Register</h2>
+    <div class="mb-3">
+      <input v-model="firstname" type="text" placeholder="First Name" class="form-control">
+    </div>
+    <div class="mb-3">
+      <input v-model="lastname" type="text" placeholder="Last Name" class="form-control">
+    </div>
+    <div class="mb-3">
+      <input v-model="email" type="email" placeholder="Email" class="form-control">
+    </div>
+    <div class="mb-3">
+      <input v-model="password" type="password" placeholder="Password" class="form-control">
+    </div>
+    <div class="mb-3">
+      <input v-model="repeatedPassword" type="password" placeholder="Confirm Password" class="form-control">
+    </div>
+    <button @click="register" class="register-btn btn btn-success btn-block mb-2">Register</button>
+    <button @click="googleRegister" class="google-register-btn btn btn-danger btn-block d-flex align-items-center justify-content-center mb-3">
+      <img src="google.png" alt="Google" class="google-icon mr-2"> Google
     </button>
-    <p>Already have an account? <router-link to="/login">Login</router-link></p>
+    <p class="text-center">Already have an account? <router-link to="/login">Login</router-link></p>
     <NotificationComponent class="notification-component-class"/>
   </div>
 </template>
+
 
 <script>
 import { ref } from 'vue';
@@ -116,51 +127,17 @@ export default {
   margin: 100px auto;
   padding: 20px;
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: 0.25rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
 
-.register-btn, .google-register-btn {
-  background-color: #28a745;
-  color: #fff;
-  display: block;
-  width: 80%;
-  margin: 10px auto;
-  padding: 0.4rem 0.8rem;
-  border-radius: 25px;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-.register-btn:hover {
-  background-color: #217c3b;
-}
-
-.google-register-btn {
-  background-color: #dc3545;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.google-register-btn:hover {
-  background-color: #b22234;
+.register-btn:hover, .google-register-btn:hover {
+  transform: scale(1.02);
 }
 
 .google-icon {
-  width: 18px;
-  height: 18px;
-  margin-right: 5px;
-  vertical-align: middle;
-}
-
-p {
-  text-align: center;
-}
-
-.notification-component-class {
-
+  height: 20px;
 }
 </style>
+

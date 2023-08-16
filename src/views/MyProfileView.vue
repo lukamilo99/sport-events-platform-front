@@ -1,20 +1,27 @@
 <template>
-  <div class="container">
+  <div class="container profile-container bg-white p-4 rounded shadow-sm">
     <ProfileNavigationComponent />
-    <h2>Profile</h2>
-    <div>
-      <label for="firstname">First Name:</label>
-      <input v-model="firstname" type="text" id="firstname">
-    </div>
-    <div>
-      <label for="lastname">Last Name:</label>
-      <input v-model="lastname" type="text" id="lastname">
-    </div>
-    <div>
-      <label for="email">Email:</label>
-      <input v-model="email" type="email" id="email" :disabled="isOAuthUser">
-    </div>
-    <button @click="updateProfile">Update Profile</button>
+    <h2 class="my-3">Profile</h2>
+
+    <form @submit.prevent="updateProfile">
+      <div class="mb-3">
+        <label for="firstname" class="form-label">First Name:</label>
+        <input v-model="firstname" type="text" id="firstname" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label for="lastname" class="form-label">Last Name:</label>
+        <input v-model="lastname" type="text" id="lastname" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input v-model="email" type="email" id="email" class="form-control" :disabled="isOAuthUser">
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+    </form>
+
     <NotificationComponent/>
   </div>
 </template>
@@ -105,33 +112,10 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  max-width: 400px;
-  margin: 100px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-
-button {
-  width: 80%;
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 25px;
-  background-color: #007BFF;
-  color: white;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-  margin: 10px auto;
-  display: block;
-}
-
-button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
+.profile-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
 }
 </style>
 

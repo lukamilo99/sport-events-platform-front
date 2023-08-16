@@ -1,24 +1,24 @@
 <template>
-  <header>
-    <div class="left-section">
-      <router-link to="/home" class="app-title-link">
-        <h1 class="app-title">Sport Connecting People</h1>
-      </router-link>
-      <router-link to="/home" class="nav-link">Home</router-link>
-      <router-link :to="{ path: '/events', query: { page: '1' } }" class="nav-link">Events</router-link>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark top">
+    <router-link to="/home" class="navbar-brand">Sport Connecting People</router-link>
+    <div class="navbar-nav">
+      <router-link to="/home" class="nav-item nav-link">Home</router-link>
+      <router-link :to="{ path: '/events', query: { page: '1' } }" class="nav-item nav-link">Events</router-link>
+      <router-link v-if="isAdmin" to="/users" class="nav-item nav-link btn btn-success">Users</router-link>
     </div>
-    <div class="user-section">
-      <router-link v-if="isAdmin" to="/users" class="users-btn">Users</router-link>
-      <div v-if="isLoggedIn">
-        <button @click="toggleProfileMenu" class="profile-btn" tabindex="0" @blur="hideDropdown">Profile</button>
-        <div v-if="showProfileMenu" class="profile-dropdown">
-          <button @click="goToProfile">My Profile</button>
-          <button @click="logout">Logout</button>
+    <div class="ms-auto">
+      <div v-if="isLoggedIn" class="dropdown profile-dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          Profile
+        </button>
+        <div class="dropdown-menu" aria-labelledby="profileDropdown">
+          <button @click="goToProfile" class="dropdown-item">My Profile</button>
+          <button @click="logout" class="dropdown-item">Logout</button>
         </div>
       </div>
-      <router-link v-else to="/login" class="login-btn">Login</router-link>
+      <router-link v-else to="/login" class="ml-3 btn btn-success">Login</router-link>
     </div>
-  </header>
+  </nav>
 </template>
 
 <script>
@@ -45,16 +45,6 @@ export default {
       }
     };
 
-    const hideDropdown = () => {
-      setTimeout(() => {
-        showProfileMenu.value = false;
-      }, 100);
-    };
-
-    const toggleProfileMenu = () => {
-      showProfileMenu.value = !showProfileMenu.value;
-    };
-
     const goToProfile = () => {
       router.push('/profile/my-profile');
     };
@@ -62,10 +52,8 @@ export default {
     return {
       isLoggedIn,
       logout,
-      toggleProfileMenu,
       showProfileMenu,
       goToProfile,
-      hideDropdown,
       isAdmin
     };
   },
@@ -73,116 +61,36 @@ export default {
 </script>
 
 <style scoped>
-header {
-  background-color: #343a40;
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 5%;
+.navbar {
+  background-color: #000000ff;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
+  padding: 15px 20px;
 }
 
-button {
-  padding: 0.5rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-.left-section, .user-section {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.app-title {
+.navbar-brand {
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0;
   letter-spacing: 1px;
 }
 
-.app-title-link, .nav-link {
-  color: #fff;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-.app-title-link:hover, .nav-link:hover {
+.nav-item.nav-link:hover {
   color: #ddd;
-}
-
-.nav-link {
-  font-size: 1.2rem;
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  background-color: transparent;
-  transition: background-color 0.3s;
-}
-
-.nav-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.user-section {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.profile-btn {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.profile-btn:hover {
-  background-color: #0056b3;
+.dropdown-menu {
+  border: 1px solid #ddd;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 .profile-dropdown {
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-  top: 60px;
-  right: 5%;
-  width: 150px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-  z-index: 1001;
+  position: relative;
+  margin-right: 20px;
 }
 
-.profile-dropdown button {
-  width: 100%;
-  text-align: left;
-}
-
-.login-btn, .users-btn {
-  background-color: #28a745;
-  color: #fff;
-  border-radius: 25px;
-  text-decoration: none;
-  display: inline-block;
-  vertical-align: middle;
-  padding: 0.5rem 1.5rem;
-}
-
-.login-btn:hover, .users-btn:hover {
-  background-color: #217c3b;
+.nav-item {
+  margin-left: 15px;
 }
 </style>
+

@@ -1,14 +1,14 @@
 <template>
-  <div class="navigation-switch">
+  <nav class="navigation-switch nav">
     <button
-        class="menu-item"
+        class="menu-item nav-item btn btn-light"
         :class="{ active: currentRoute === '/profile/my-profile' }"
         @click="goTo('/profile/my-profile')">My Profile</button>
     <button
-        class="menu-item"
+        class="menu-item nav-item btn btn-light"
         :class="{ active: currentRoute === '/profile/my-events' }"
         @click="goTo('/profile/my-events')">My Events</button>
-  </div>
+  </nav>
 </template>
 
 <script>
@@ -44,25 +44,13 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.menu-item {
-  background: none;
-  border: none;
-  color: #333;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 8px;
-  transition: background-color 0.3s;
-}
-
-.menu-item:hover, .menu-item.active {
-  background-color: #f1f1f1;
-  border-radius: 5px;
+  gap: 10px;
 }
 
 .menu-item.active {
-  color: #007BFF;
+  background-color: #007BFF !important;
+  color: white !important;
   font-weight: bold;
 }
 </style>
+

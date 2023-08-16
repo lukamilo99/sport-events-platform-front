@@ -1,20 +1,25 @@
 <template>
-  <div class="users-container">
-    <h1>Users List</h1>
-    <input v-model="searchQuery" placeholder="Search by event name" @input="updateSearch(true)" />
-    <ul v-if="users" class="users-list">
-      <li v-for="user in users" :key="user.id" class="user-item">
+  <div class="users-container container bg-white p-4 rounded shadow-sm">
+    <h1 class="mb-4">Users List</h1>
+    <input v-model="searchQuery" placeholder="Search by user name" @input="updateSearch(true)" class="form-control mb-4" />
+
+    <ul v-if="users" class="list-group">
+      <li v-for="user in users" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
         <span class="user-name">{{ user.firstname }} {{ user.lastname }}</span>
-        <button v-if="user.enabled" @click="banUser(user.id)">Ban</button>
-        <button v-else @click="unbanUser(user.id)">Unban</button>
-        <button @click="deleteUser(user.id)">Delete</button>
+        <div>
+          <button v-if="user.enabled" @click="banUser(user.id)" class="btn btn-warning btn-sm mr-2">Ban</button>
+          <button v-else @click="unbanUser(user.id)" class="btn btn-info btn-sm mr-2">Unban</button>
+          <button @click="deleteUser(user.id)" class="btn btn-danger btn-sm">Delete</button>
+        </div>
       </li>
     </ul>
-    <p v-else class="no-results">No results</p>
-    <div class="pagination-controls" v-if="users.length">
-      <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+
+    <p v-else class="no-results mt-4 text-center">No results</p>
+
+    <div class="pagination-controls mt-4 d-flex justify-content-between align-items-center" v-if="users.length">
+      <button @click="prevPage" :disabled="currentPage === 1" class="btn btn-primary">Previous</button>
       <span>Page {{ currentPage }} of {{ totalPageCount }}</span>
-      <button @click="nextPage" :disabled="currentPage === totalPageCount">Next</button>
+      <button @click="nextPage" :disabled="currentPage === totalPageCount" class="btn btn-primary">Next</button>
     </div>
   </div>
 </template>
@@ -122,45 +127,13 @@ const prevPage = () => {
 
 <style scoped>
 .users-container {
-  max-width: 400px;
+  max-width: 600px;
   margin: 100px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
 
-.users-list {
-  list-style-type: none;
-  padding: 0;
-}
-
-.user-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  background-color: #fff;
-  border-radius: 5px;
-  margin-bottom: 0.5rem;
-}
-
-.user-name {
-  flex: 1;
-  padding-right: 1rem;
-}
-
-button {
-  padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-button:hover {
-  background-color: #e0e0e0;
+.no-results {
+  color: #777;
 }
 </style>
+

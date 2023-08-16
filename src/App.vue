@@ -1,7 +1,9 @@
 <template>
   <div>
     <HeaderComponent/>
-    <router-view/>
+    <div class="main-content">
+      <router-view/>
+    </div>
   </div>
 </template>
 
@@ -25,68 +27,11 @@ export default {
 </script>
 
 <style>
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', sans-serif;
+body {
+  background-color: #1098f7ff;
 }
 
-button {
-  padding: 0.5rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 25px;
-  background-color: #007BFF;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-h1, h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.pagination-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.pagination-controls button {
-  padding: 8px 12px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.pagination-controls button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.no-results {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #888;
-  margin-top: 20px;
+.main-content {
+  margin-top: 40px;
 }
 </style>

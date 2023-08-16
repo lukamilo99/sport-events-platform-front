@@ -1,13 +1,17 @@
 <template>
   <div class="login container">
-    <h2>Login</h2>
-    <input v-model="email" type="email" placeholder="Email">
-    <input v-model="password" type="password" placeholder="Password">
-    <button @click="login" class="login-btn">Login</button>
-    <button @click="googleLogin" class="google-login-btn">
-      <img src="google.png" alt="Google" class="google-icon"> Google
+    <h2 class="mb-4">Login</h2>
+    <div class="mb-3">
+      <input v-model="email" type="email" placeholder="Email" class="form-control">
+    </div>
+    <div class="mb-3">
+      <input v-model="password" type="password" placeholder="Password" class="form-control">
+    </div>
+    <button @click="login" class="login-btn btn btn-success btn-block mb-2">Login</button>
+    <button @click="googleLogin" class="google-login-btn btn btn-danger btn-block d-flex align-items-center justify-content-center mb-3">
+      <img src="google.png" alt="Google" class="google-icon mr-2"> Google
     </button>
-    <p>Don't have an account? <router-link to="/register">Register</router-link></p>
+    <p class="text-center">Don't have an account? <router-link to="/register">Register</router-link></p>
     <NotificationComponent/>
   </div>
 </template>
@@ -92,41 +96,18 @@ export default {
   margin: 100px auto;
   padding: 20px;
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: 0.25rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
 
-.login-btn, .google-login-btn {
-  background-color: #28a745;
-  color: #fff;
-  display: block;
-  width: 80%;
-  margin: 10px auto;
-  padding: 0.4rem 0.8rem;
-  border-radius: 25px;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
+.login-btn:hover, .google-login-btn:hover {
+  transform: scale(1.02);
 }
 
-.login-btn:hover {
-  background-color: #217c3b;
-}
-
-.google-login-btn {
-  background-color: #dc3545;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.google-login-btn:hover {
-  background-color: #b22234;
-}
-
-p {
-  text-align: center;
+.google-icon {
+  height: 20px;
 }
 </style>
+
 

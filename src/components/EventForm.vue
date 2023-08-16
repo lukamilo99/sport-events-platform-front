@@ -1,45 +1,46 @@
 <template>
-  <div class="form-container">
-    <form @submit.stop.prevent="handleSubmit" novalidate>
-      <div>
-        <label for="eventName">Name:</label>
-        <input id="eventName" type="text" v-model="event.name" required />
-      </div>
-      <div>
-        <label for="eventCapacity">Capacity:</label>
-        <input id="eventCapacity" type="number" v-model="event.capacity" required />
-      </div>
-      <div>
-        <label for="eventSport">Sport:</label>
-        <input id="eventSport" type="text" v-model="event.sport" required />
-      </div>
-      <div>
-        <label for="eventDate">Date and Time:</label>
-        <VueDatePicker class="my-datepicker" id="eventDate" v-model="event.date" format="dd-MM-yyyy HH:mm" datetime></VueDatePicker>
-      </div>
-      <div>
-        <label for="locationSearch">Location:</label>
-        <input id="locationSearch" type="text" v-model="locationQuery" @input="searchLocations" />
-        <div v-if="locations.length" class="dropdown">
-          <div v-for="location in locations" :key="location.formattedAddress" @click="selectLocation(location)">
-            {{ location.formattedAddress }}
+  <div class="container shadow bg-white rounded">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <h2 class="text-center mb-4">{{ mode === 'create' ? 'Create your Event' : 'Update your Event' }}</h2>
+        <form @submit.stop.prevent="handleSubmit" novalidate>
+          <div class="mb-3">
+            <input id="eventName" placeholder="Enter event name" type="text" v-model="event.name" required class="form-control" />
           </div>
-        </div>
-        <span @click.prevent="toggleMap" class="choose-map-link">Choose on map</span>
+          <div class="mb-3">
+            <input id="eventCapacity" placeholder="Enter event capacity" type="number" v-model="event.capacity" required class="form-control" />
+          </div>
+          <div class="mb-3">
+            <input id="eventSport" placeholder="Enter event sport" type="text" v-model="event.sport" required class="form-control" />
+          </div>
+          <div class="mb-3">
+            <VueDatePicker class="form-control my-datepicker" id="eventDate" placeholder="Enter event date and time" v-model="event.date" format="dd-MM-yyyy HH:mm" datetime></VueDatePicker>
+          </div>
+          <div class="mb-3">
+            <input id="locationSearch" placeholder="Enter event location" type="text" v-model="locationQuery" @input="searchLocations" class="form-control" />
+            <div v-if="locations.length" class="dropdown-menu show position-absolute w-100">
+              <div v-for="location in locations" :key="location.formattedAddress" @click="selectLocation(location)" class="dropdown-item">
+                {{ location.formattedAddress }}
+              </div>
+            </div>
+            <a @click.prevent="toggleMap" class="choose-map-link d-block mt-2 text-primary">Choose on map</a>
+          </div>
+          <div class="btn-container">
+            <button type="submit" class="action-btn btn btn-primary">{{ mode === 'create' ? 'Create' : 'Update' }}</button>
+          </div>
+        </form>
+        <NotificationComponent />
+        <EventMap
+            :mode="'create'"
+            :initialLocation="initialLocation"
+            :markerLocation="event.location.coordinates"
+            :showMap="showMap"
+            @update:showMap="toggleMap"
+            @update-marker-location="updateMarkerLocation"
+            @submit-location="submitLocation"
+        />
       </div>
-
-      <EventMap
-          :mode="'create'"
-          :initialLocation="initialLocation"
-          :markerLocation="event.location.coordinates"
-          :showMap="showMap"
-          @update:showMap="toggleMap"
-          @update-marker-location="updateMarkerLocation"
-          @submit-location="submitLocation"
-      />
-      <button type="submit">{{ mode === 'create' ? 'Create' : 'Update' }}</button>
-    </form>
-    <NotificationComponent/>
+    </div>
   </div>
 </template>
 
@@ -156,8 +157,8 @@ export default {
 
     const fetchLocationFromCoordinates = debounce(async () => {
       try {
-        const lat = event.value.location.coordinates[1];
-        const lon = event.value.location.coordinates[0];
+        const lat = event.value.location.coordinates[0];
+        const lon = event.value.location.coordinates[1];
         await axios.get('http://localhost:8081/geo/address',
             { params: { lat, lon } })
             .then(value => {
@@ -210,7 +211,6 @@ export default {
       }
     }, { immediate: true });
 
-
     return {
       event,
       locationQuery,
@@ -229,45 +229,27 @@ export default {
 </script>
 
 <style scoped>
-.form-container {
-  max-width: 400px;
-  margin: 100px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
+.container {
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
-.dropdown {
-  max-height: 150px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
-}
-
-.dropdown div {
-  padding: 8px;
-  cursor: pointer;
-}
-
-.dropdown div:hover {
-  background-color: #f7f7f7;
+.btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .choose-map-link {
-  color: #007BFF;
-  font-size: 0.9rem;
   cursor: pointer;
-  text-decoration: underline;
-  transition: color 0.3s;
+  text-align: center;
   display: block;
-  margin-top: 10px;
+  padding: 0.5rem 0;
 }
 
 .choose-map-link:hover {
   color: #0056b3;
 }
 </style>
+

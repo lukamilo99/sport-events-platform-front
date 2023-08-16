@@ -1,40 +1,41 @@
 <template>
-  <div class="event-details-container">
-    <div v-if="eventDetails" class="event-item">
-      <div class="header-container">
+  <div class="event-details-container container">
+    <div v-if="eventDetails" class="event-item card mt-5 p-4">
+      <div class="header-container d-flex justify-content-between align-items-center mb-3">
         <div class="header-div"></div>
 
         <div class="header-div">
-          <h2 class="event-title">{{ eventDetails.name }}</h2>
+          <h2 class="event-title card-title">{{ eventDetails.name }}</h2>
         </div>
 
         <div class="header-div action-buttons">
-          <button v-if="canJoinEvent" @click="joinEvent" class="action-btn">Join Event</button>
-          <button v-if="canLeaveEvent" @click="leaveEvent" class="action-btn">Leave Event</button>
-          <button v-if="isEventCreator" @click="deleteEvent" class="action-btn">Delete Event</button>
+          <button v-if="canJoinEvent" @click="joinEvent" class="action-btn btn btn-primary">Join Event</button>
+          <button v-if="canLeaveEvent" @click="leaveEvent" class="action-btn btn btn-warning">Leave Event</button>
+          <button v-if="isEventCreator" @click="deleteEvent" class="action-btn btn btn-danger">Delete Event</button>
         </div>
       </div>
 
-      <p><span class="sport-icon">{{ getSportIcon(eventDetails.sport) }}</span> {{ eventDetails.sport }}</p>
-      <p><span class="date-icon">📅</span> {{ formatDate(eventDetails.date) }}</p>
-      <p><span class="location-icon">📍</span> {{ eventDetails.location.formattedAddress }} </p>
+      <p><span class="sport-icon mr-2">{{ getSportIcon(eventDetails.sport) }}</span> {{ eventDetails.sport }}</p>
+      <p><span class="date-icon mr-2">📅</span> {{ formatDate(eventDetails.date) }}</p>
+      <p><span class="location-icon mr-2">📍</span> {{ eventDetails.location.formattedAddress }}</p>
       <p>Capacity: {{ eventDetails.capacity }}</p>
       <p>Available Spots: {{ eventDetails.availableSpots }}</p>
       <p>Event Creator: {{ eventDetails.eventCreator.name }}</p>
 
-      <div class="participants-dropdown" @click="toggleParticipantsList">
-        Participants ({{ participantCount }})
-        <div v-if="showParticipantsList" class="participants-list">
-          <div v-for="participant in eventDetails.participants" :key="participant.id" class="participant-item">
+      <div class="participants-dropdown dropdown">
+        <button class="btn btn-light dropdown-toggle" type="button" id="participantsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Participants ({{ participantCount }})
+        </button>
+        <div class="participants-list dropdown-menu" aria-labelledby="participantsDropdown">
+          <div v-for="participant in eventDetails.participants" :key="participant.id" class="participant-item dropdown-item d-flex justify-content-between align-items-center">
             {{ participant.name }}
-            <button v-if="isEventCreator" @click="removeParticipant(participant.id)" class="remove-btn">Remove</button>
+            <button v-if="isEventCreator" @click="removeParticipant(participant.id)" class="remove-btn btn btn-sm btn-danger">Remove</button>
           </div>
         </div>
       </div>
 
-      <button @click="showMap(eventDetails.location.coordinates[1], eventDetails.location.coordinates[0])" class="action-btn map-btn">🗺️ Show on map</button>
+      <button @click="showMap(eventDetails.location.coordinates[1], eventDetails.location.coordinates[0])" class="action-btn map-btn btn btn-info mt-3">🗺️ Show on map</button>
     </div>
-
     <EventMap
         :mode="'view'"
         v-if="showMapModal"
@@ -64,7 +65,6 @@ export default {
     const showMapModal = ref(false);
     const currentLat = ref(null);
     const currentLon = ref(null);
-    const showParticipantsList = ref(false);
 
     const userId = computed(() => store.getters.userId);
 
@@ -101,10 +101,6 @@ export default {
     const formatDate = (dateArray) => {
       const [year, month, day, hour, minute] = dateArray;
       return `${day}.${month}.${year} ${hour}:${minute.toString().padStart(2, '0')}`;
-    };
-
-    const toggleParticipantsList = () => {
-      showParticipantsList.value = !showParticipantsList.value;
     };
 
     const showMap = (lat, lon) => {
@@ -168,116 +164,44 @@ export default {
       removeParticipant,
       canJoinEvent,
       canLeaveEvent,
-      isEventCreator,
-      showParticipantsList,
-      toggleParticipantsList
+      isEventCreator
     };
   }
 }
 </script>
 
 <style scoped>
-.event-details-container,
+.event-details-container {
+  margin-top: 100px;
+}
+
 .event-item {
   text-align: center;
 }
 
-.event-details-container {
-  margin: 100px auto;
-  max-width: 600px;
-}
-
-.event-item {
-  padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .header-div {
   flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .action-buttons {
   justify-content: flex-end;
 }
 
-.action-btn, .map-btn {
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin: 0 5px;
-  background-color: #007bff;
-  color: #fff;
-}
-
-.action-btn:hover, .map-btn:hover {
-  background-color: #0056b3;
-}
-
-.map-btn {
-  display: block;
-  margin: 20px auto 0;
-}
-
-.participants-dropdown {
-  position: relative;
-  cursor: pointer;
-  padding: 8px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  background-color: #ffffff;
-  transition: background-color 0.3s;
-}
-
-.participants-dropdown:hover {
-  background-color: #f7f7f7;
+.sport-icon, .date-icon, .location-icon {
+  margin-right: 8px;
 }
 
 .participants-list {
-  position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  width: 200px;
+  width: 300px;
   max-height: 200px;
   overflow-y: auto;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  margin-top: 5px;
-  z-index: 10;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.participant-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .remove-btn {
   margin-left: 10px;
-  background-color: #dc3545;
-  color: #fff;
-  border: none;
-  padding: 3px 7px;
-  font-size: 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .remove-btn:hover {

@@ -1,31 +1,35 @@
 <template>
-  <div class="events-view">
+  <div class="events-view container bg-white p-4 rounded shadow">
     <ProfileNavigationComponent />
-    <h2>Events</h2>
-    <div class="btn-group">
+    <h2 class="my-3">Events</h2>
+    <div class="btn-group mb-3" role="group">
       <button
-          :class="{ active: currentView === 'created' }"
+          type="button"
+          class="btn btn-primary"
+          :class="{ 'active': currentView === 'created' }"
           @click="loadUserEvents('created')">My Created Events</button>
       <button
-          :class="{ active: currentView === 'participating' }"
+          type="button"
+          class="btn btn-primary"
+          :class="{ 'active': currentView === 'participating' }"
           @click="loadUserEvents('participating')">Events I'm Participating In</button>
     </div>
 
-    <ul v-if="currentEvents.length">
-      <li v-for="event in currentEvents" :key="event.id">
+    <ul class="list-unstyled">
+      <li v-for="event in currentEvents" :key="event.id" class="py-2 border-bottom">
         {{ event.name }}
-        <button v-if="currentView === 'created'" @click="editEvent(event.id)">Edit</button>
-        <button v-if="currentView === 'created'" @click="deleteEvent(event.id)">Delete</button>
-        <button v-if="currentView === 'participating'" @click="leaveEvent(event.id)">Leave</button>
+        <button v-if="currentView === 'created'" @click="editEvent(event.id)" class="btn btn-sm btn-warning ml-2">Edit</button>
+        <button v-if="currentView === 'created'" @click="deleteEvent(event.id)" class="btn btn-sm btn-danger ml-2">Delete</button>
+        <button v-if="currentView === 'participating'" @click="leaveEvent(event.id)" class="btn btn-sm btn-secondary ml-2">Leave</button>
       </li>
     </ul>
 
-    <div v-if="currentEvents.length" class="pagination-controls">
-      <button @click="prevPage" :disabled="currentPage <= 1">Previous</button>
+    <div v-if="currentEvents.length" class="d-flex justify-content-between mt-4">
+      <button @click="prevPage" :disabled="currentPage === 1" class="btn btn-primary">Previous</button>
       <span>Page {{ currentPage }} of {{ totalPageCount }}</span>
-      <button @click="nextPage" :disabled="currentPage >= totalPageCount">Next</button>
+      <button @click="nextPage" :disabled="currentPage === totalPageCount" class="btn btn-primary">Next</button>
     </div>
-    <p v-else class="no-results">No results</p>
+    <p v-else class="no-results text-center text-muted my-4">No results</p>
   </div>
 </template>
 
@@ -139,52 +143,20 @@ export default {
 
 <style scoped>
 .events-view {
-  max-width: 400px;
-  margin: 100px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
 }
 
 .btn-group {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  width: 100%;
 }
 
-.btn-group button {
-  padding: 8px 16px;
-  border: none;
-  background-color: #007BFF;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.btn-group button:hover {
-  background-color: #0056b3;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  padding: 10px;
-  border-bottom: 1px solid #eaeaea;
-}
-
-li:last-child {
-  border-bottom: none;
-}
-
-.btn-group button.active {
-  background-color: #0056b3;
-  font-weight: bold;
+.btn-warning {
+  margin-right: 10px;
 }
 </style>
+
 

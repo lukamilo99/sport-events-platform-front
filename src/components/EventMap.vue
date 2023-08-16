@@ -1,14 +1,18 @@
 <template>
-  <div v-if="showMap" class="map-modal-overlay" @click="toggleMap">
-    <div class="map-modal" @click.stop>
-      <div class="map-container">
-        <l-map :zoom="13" :center="initialLocation" @ready="handleMapReady">
-          <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></l-tile-layer>
-          <l-marker :lat-lng="markerLocation"></l-marker>
-        </l-map>
+  <div v-if="showMap" class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="map-container">
+          <l-map :zoom="13" :center="initialLocation" @ready="handleMapReady">
+            <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></l-tile-layer>
+            <l-marker :lat-lng="markerLocation"></l-marker>
+          </l-map>
+        </div>
+        <div class="modal-footer">
+          <button v-if="mode === 'create'" @click.prevent="submitLocation" class="btn btn-primary">Submit location</button>
+          <button v-else-if="mode === 'view'" @click.prevent="toggleMap" class="btn btn-danger">Exit map</button>
+        </div>
       </div>
-      <button v-if="mode === 'create'" @click.prevent="submitLocation">Submit location</button>
-      <button v-else-if="mode === 'view'" @click.prevent="toggleMap">Exit map</button>
     </div>
   </div>
 </template>
@@ -65,42 +69,35 @@ export default {
 };
 </script>
 
-<style>
-.map-modal-overlay {
+<style scoped>
+.modal-content::before {
+  content: "";
   position: fixed;
   top: 0;
+  right: 0;
+  bottom: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  z-index: -1;
   background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.map-modal {
-  width: 70%;
-  height: 60%;
-  background: #ffffff;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  backdrop-filter: blur(5px);
 }
 
 .map-container {
-  height: calc(100% - 70px);
-  width: 100%;
+  height: 400px;
   overflow: hidden;
-  flex: 1;
 }
 
-button {
-  padding: 10px 20px;
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
 }
 
+.modal-footer {
+  display: flex;
+  justify-content: center;
+}
 </style>
+

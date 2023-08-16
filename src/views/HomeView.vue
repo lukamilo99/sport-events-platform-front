@@ -1,28 +1,32 @@
 <template>
-  <div class="home-container">
-    <section class="action-section">
-      <h2 class="section-title">Discover & Create</h2>
-      <div class="action-wrapper">
-        <div class="icon-filters">
-          <button @click="redirectToEvents('sport', 'Football')" class="icon-btn">⚽</button>
-          <button @click="redirectToEvents('sport', 'Basketball')" class="icon-btn">🏀</button>
-          <button @click="redirectToEvents('sport', 'Tennis')" class="icon-btn">🎾</button>
-          <button @click="redirectToEvents('city', 'Belgrade')" class="icon-btn">🏙️</button>
-          <button @click="redirectToEvents('city', 'Novi_sad')" class="icon-btn">🌆</button>
-          <button @click="redirectToEvents('city', 'Nis')" class="icon-btn">🌄</button>
+  <div class="main-container container mt-5">
+    <section class="content-section p-4 mb-4 bg-light rounded">
+      <h2 class="section-title mb-4">Discover & Create</h2>
+      <div class="action-wrapper d-flex flex-column align-items-center">
+        <div class="icon-filters d-flex gap-2 mb-3">
+          <button @click="redirectToEvents('sport', 'Football')" class="icon-btn btn btn-light btn-circle">⚽</button>
+          <button @click="redirectToEvents('sport', 'Basketball')" class="icon-btn btn btn-light btn-circle">🏀</button>
+          <button @click="redirectToEvents('sport', 'Tennis')" class="icon-btn btn btn-light btn-circle">🎾</button>
+          <button @click="redirectToEvents('city', 'Belgrade')" class="icon-btn btn btn-light btn-circle">🏙️</button>
+          <button @click="redirectToEvents('city', 'Novi_sad')" class="icon-btn btn btn-light btn-circle">🌆</button>
+          <button @click="redirectToEvents('city', 'Nis')" class="icon-btn btn btn-light btn-circle">🌄</button>
         </div>
-        <div class="buttons-wrapper">
-          <button @click="viewAllEvents" class="action-btn">View All Events</button>
-          <button @click="createEvent" class="action-btn">Create Your Event</button>
+        <div class="buttons-wrapper d-flex justify-content-between w-100">
+          <button @click="viewAllEvents" class="action-btn btn btn-primary">View All Events</button>
+          <button @click="createEvent" class="action-btn btn btn-primary">Create Your Event</button>
         </div>
       </div>
     </section>
-    <section class="latest-events-section">
-      <h2 class="section-title">Latest Events</h2>
-      <EventsList :events="events" />
+
+    <section class="content-section p-4 mb-4 bg-light rounded">
+      <h2 class="section-title mb-4">Latest Events</h2>
+      <div class="row">
+        <EventsList :events="events" />
+      </div>
     </section>
   </div>
 </template>
+
 
 <script>
 import EventsList from '../components/EventList.vue';
@@ -72,37 +76,33 @@ export default {
 </script>
 
 <style scoped>
-.home-container {
+.main-container {
+  margin-top: 5rem;
+  padding: 2rem 0;
   min-height: 100vh;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+}
+
+.content-section {
+  background-color: #ffffff;
+  padding: 2rem;
+  margin: 0 2rem 2rem 2rem;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
 }
 
 .section-title {
   font-size: 1.8rem;
   font-weight: bold;
-  margin-top: 10px;
-  margin-bottom: 20px;
 }
 
-.icon-filters {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+.section-title {
+  font-size: 1.8rem;
+  font-weight: bold;
 }
 
 .icon-btn {
-  background-color: #e0e0e0;
-  border: none;
-  padding: 10px;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  cursor: pointer;
   transition: background-color 0.3s;
 }
 
@@ -110,34 +110,9 @@ export default {
   background-color: #d1d1d1;
 }
 
-.action-section {
-  background-color: #f8f9fa;
-  padding: 20px 5%;
-  border-bottom: 1px solid #e0e0e0;
-  margin-top: 70px;
-}
-
-.latest-events-section {
-  background-color: #f8f9fa;
-  padding: 20px 5%;
-  border-bottom: 1px solid #e0e0e0;
-  margin-top: 20px;
-}
-
-.action-wrapper {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .buttons-wrapper {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
   max-width: 400px;
-  margin-top: 20px;
 }
 </style>
+
 

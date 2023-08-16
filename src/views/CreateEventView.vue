@@ -1,5 +1,5 @@
 <template>
-  <div class="create-event-container">
+  <div class="create-event-container mt-5">
     <EventForm
         :mode="'create'"
         @submit="createEvent"
@@ -39,3 +39,11 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.create-event-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
+}
+</style>

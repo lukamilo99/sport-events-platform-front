@@ -65,22 +65,4 @@ export default {
   color: #2196f3;
   border: 1px solid #2196f3;
 }
-
-.notification.error {
-  background-color: rgba(255, 204, 204, 0.9);
-  color: #f44336;
-  border: 1px solid #f44336;
-}
-
-.notification.success {
-  background-color: rgba(204, 255, 204, 0.9);
-  color: #4caf50;
-  border: 1px solid #4caf50;
-}
-
-.notification.info {
-  background-color: rgba(204, 204, 255, 0.9);
-  color: #2196f3;
-  border: 1px solid #2196f3;
-}
 </style>

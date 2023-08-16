@@ -3,6 +3,8 @@ import { store } from './store/store';
 import App from './App.vue';
 import router from './router/router';
 import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap"
 
 axios.defaults.withCredentials = true;
 axios.interceptors.request.use((config) => {
