@@ -230,6 +230,7 @@ export default {
 
 <style scoped>
 .container {
+  position: relative;
   padding-top: 20px;
   padding-bottom: 20px;
 }

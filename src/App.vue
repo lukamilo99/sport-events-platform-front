@@ -1,19 +1,22 @@
 <template>
-  <div>
+  <div class="d-flex flex-column min-vh-100">
     <HeaderComponent/>
-    <div class="main-content">
+    <div class="main-content flex-fill">
       <router-view/>
     </div>
+    <FooterComponent/>
   </div>
 </template>
 
 <script>
 import { useStore } from 'vuex';
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import FooterComponent from "@/components/FooterComponent.vue";
 
 export default {
   name: 'App',
   components: {
+    FooterComponent,
     HeaderComponent
   },
   async created() {
@@ -33,5 +36,6 @@ body {
 
 .main-content {
   margin-top: 40px;
+  margin-bottom: 40px;
 }
 </style>

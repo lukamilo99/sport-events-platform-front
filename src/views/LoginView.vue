@@ -1,5 +1,5 @@
 <template>
-  <div class="login container">
+  <div class="login container shadow">
     <h2 class="mb-4">Login</h2>
     <div class="mb-3">
       <input v-model="email" type="email" placeholder="Email" class="form-control">
@@ -9,7 +9,7 @@
     </div>
     <button @click="login" class="login-btn btn btn-success btn-block mb-2">Login</button>
     <button @click="googleLogin" class="google-login-btn btn btn-danger btn-block d-flex align-items-center justify-content-center mb-3">
-      <img src="google.png" alt="Google" class="google-icon mr-2"> Google
+      <img src="~@/assets/google.png" alt="Google" class="google-icon mr-2"> Google
     </button>
     <p class="text-center">Don't have an account? <router-link to="/register">Register</router-link></p>
     <NotificationComponent/>
@@ -92,13 +92,22 @@ export default {
 
 <style scoped>
 .container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
   max-width: 400px;
-  margin: 100px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 0.25rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.login-btn, .google-login-btn {
+  width: 200px;
+  height: 40px;
 }
 
 .login-btn:hover, .google-login-btn:hover {

@@ -14,13 +14,23 @@
           :class="{ 'active': currentView === 'participating' }"
           @click="loadUserEvents('participating')">Events I'm Participating In</button>
     </div>
-
+    <div class="mb-3">
+      <input type="checkbox" id="includePastEvents" v-model="includePastEvents" />
+      <label for="includePastEvents">Include past events</label>
+    </div>
     <ul class="list-unstyled">
       <li v-for="event in currentEvents" :key="event.id" class="py-2 border-bottom">
-        {{ event.name }}
-        <button v-if="currentView === 'created'" @click="editEvent(event.id)" class="btn btn-sm btn-warning ml-2">Edit</button>
-        <button v-if="currentView === 'created'" @click="deleteEvent(event.id)" class="btn btn-sm btn-danger ml-2">Delete</button>
-        <button v-if="currentView === 'participating'" @click="leaveEvent(event.id)" class="btn btn-sm btn-secondary ml-2">Leave</button>
+        <div class="event-item">
+        <span :class="{ 'label-past': event.eventPast, 'label-upcoming': !event.eventPast }">
+          {{ event.eventPast ? 'Past' : 'Upcoming' }}
+        </span>
+          {{ event.name }}
+          <div class="event-actions">
+            <button v-if="currentView === 'created'" @click="editEvent(event.id)" class="btn btn-sm btn-warning">Edit</button>
+            <button v-if="currentView === 'created'" @click="deleteEvent(event.id)" class="btn btn-sm btn-danger ml-2">Delete</button>
+            <button v-if="currentView === 'participating'" @click="leaveEvent(event.id)" class="btn btn-sm btn-secondary ml-2">Leave</button>
+          </div>
+        </div>
       </li>
     </ul>
 
@@ -34,7 +44,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, watch} from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import ProfileNavigationComponent from "@/components/ProfileNavigationComponent.vue";
@@ -47,6 +57,7 @@ export default {
     const currentPage = ref(1);
     const totalPageCount = ref(0);
     const currentView = ref('created');
+    const includePastEvents = ref(false);
 
     const loadUserEvents = async (viewType) => {
       currentView.value = viewType;
@@ -61,7 +72,8 @@ export default {
       try {
         const response = await axios.get(`http://localhost:8081/event/user-creator`, {
           params: {
-            page: currentPage.value - 1
+            page: currentPage.value - 1,
+            includePastEvents: includePastEvents.value
           }
         });
         events.value = response.data.events;
@@ -75,7 +87,8 @@ export default {
       try {
         const response = await axios.get(`http://localhost:8081/event/user-participant`, {
           params: {
-            page: currentPage.value - 1
+            page: currentPage.value - 1,
+            includePastEvents: includePastEvents.value
           }
         });
         events.value = response.data.events;
@@ -125,6 +138,11 @@ export default {
       fetchUserCreatedEvents();
     });
 
+    watch(includePastEvents, () => {
+      currentPage.value = 1;
+      loadUserEvents(currentView.value);
+    });
+
     return {
       currentEvents: events,
       loadUserEvents,
@@ -136,6 +154,7 @@ export default {
       currentPage,
       totalPageCount,
       currentView,
+      includePastEvents
     };
   }
 };
@@ -156,6 +175,41 @@ export default {
 
 .btn-warning {
   margin-right: 10px;
+}
+
+.label-past {
+  background-color: red;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 5px;
+  margin-right: 8px;
+}
+
+.label-upcoming {
+  background-color: green;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 5px;
+  margin-right: 8px;
+}
+
+.label-past, .label-upcoming {
+  display: inline-block;
+  width: 80px;
+  height: 25px;
+  text-align: center;
+}
+
+.event-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.event-actions {
+  display: flex;
+  align-items: center;
 }
 </style>
 

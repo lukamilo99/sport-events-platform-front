@@ -77,9 +77,8 @@ export default {
 
 <style scoped>
 .main-container {
-  margin-top: 5rem;
+  align-items: center;
   padding: 2rem 0;
-  min-height: 100vh;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }

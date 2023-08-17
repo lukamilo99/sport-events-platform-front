@@ -39,6 +39,10 @@ export default {
 
 <style scoped>
 .notification.error, .notification.success, .notification.info {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   display: inline-block;
   padding: 10px 15px;
   border-radius: 5px;
@@ -46,6 +50,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .notification.error {

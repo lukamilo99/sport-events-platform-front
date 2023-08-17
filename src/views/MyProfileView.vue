@@ -1,5 +1,5 @@
 <template>
-  <div class="container profile-container bg-white p-4 rounded shadow-sm">
+  <div class="container profile-container bg-white p-4 rounded shadow">
     <ProfileNavigationComponent />
     <h2 class="my-3">Profile</h2>
 

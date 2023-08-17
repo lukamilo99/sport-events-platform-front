@@ -172,7 +172,9 @@ export default {
 
 <style scoped>
 .event-details-container {
-  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
 }
 
 .event-item {

@@ -1,5 +1,5 @@
 <template>
-  <div class="users-container container bg-white p-4 rounded shadow-sm">
+  <div class="users-container container bg-white p-4 rounded shadow">
     <h1 class="mb-4">Users List</h1>
     <input v-model="searchQuery" placeholder="Search by user name" @input="updateSearch(true)" class="form-control mb-4" />
 
@@ -127,13 +127,17 @@ const prevPage = () => {
 
 <style scoped>
 .users-container {
-  max-width: 600px;
-  margin: 100px auto;
-  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
 }
 
 .no-results {
   color: #777;
+}
+
+.btn-warning {
+  margin-right: 10px;
 }
 </style>
 

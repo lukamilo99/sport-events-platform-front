@@ -1,5 +1,5 @@
 <template>
-  <div class="register container">
+  <div class="register container shadow">
     <h2 class="mb-4">Register</h2>
     <div class="mb-3">
       <input v-model="firstname" type="text" placeholder="First Name" class="form-control">
@@ -18,13 +18,12 @@
     </div>
     <button @click="register" class="register-btn btn btn-success btn-block mb-2">Register</button>
     <button @click="googleRegister" class="google-register-btn btn btn-danger btn-block d-flex align-items-center justify-content-center mb-3">
-      <img src="google.png" alt="Google" class="google-icon mr-2"> Google
+      <img src="~@/assets/google.png" alt="Google" class="google-icon mr-2"> Google
     </button>
     <p class="text-center">Already have an account? <router-link to="/login">Login</router-link></p>
     <NotificationComponent class="notification-component-class"/>
   </div>
 </template>
-
 
 <script>
 import { ref } from 'vue';
@@ -123,13 +122,22 @@ export default {
 
 <style scoped>
 .container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
   max-width: 400px;
-  margin: 100px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 0.25rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.register-btn, .google-register-btn {
+  width: 200px;
+  height: 40px;
 }
 
 .register-btn:hover, .google-register-btn:hover {
