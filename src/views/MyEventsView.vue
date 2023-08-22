@@ -1,5 +1,5 @@
 <template>
-  <div class="events-view container bg-white p-4 rounded shadow">
+  <div class="container shadow">
     <ProfileNavigationComponent />
     <h2 class="my-3">Events</h2>
     <div class="btn-group mb-3" role="group">
@@ -161,10 +161,11 @@ export default {
 </script>
 
 <style scoped>
-.events-view {
+.container {
   margin-left: auto;
   margin-right: auto;
   max-width: 800px;
+  padding: 2rem 2rem;
 }
 
 .btn-group {

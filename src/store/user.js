@@ -4,7 +4,8 @@ import router from "@/router/router";
 export default {
     state: {
         user: null,
-        currentRoute: '/'
+        currentRoute: '/',
+        userLocation: ''
     },
     mutations: {
         SET_USER(state, user) {
@@ -12,6 +13,9 @@ export default {
         },
         SET_CURRENT_ROUTE(state, route) {
             state.currentRoute = route;
+        },
+        SET_USER_LOCATION(state, userLocation) {
+            state.userLocation = userLocation;
         }
     },
     actions: {
@@ -29,7 +33,9 @@ export default {
         },
         async logout({ commit }) {
             localStorage.removeItem('jwt');
+            localStorage.removeItem('userLocation')
             commit('SET_USER', null);
+            commit('SET_USER_LOCATION', '');
         },
         async updateProfile(_, credentials) {
             await axios.put('http://localhost:8081/user/update', credentials);
@@ -49,13 +55,41 @@ export default {
             } catch (error) {
                 console.error(error);
             }
+        },
+        async getUserLocation({ commit }) {
+            if(localStorage.getItem("userLocation")) {
+                commit('SET_USER_LOCATION', localStorage.getItem("userLocation"));
+                return;
+            }
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    try {
+                        const response = await axios.get('http://localhost:8081/geo/address',
+                            { params: { lat, lon } })
+                        commit('SET_USER_LOCATION', response.data.city);
+                        localStorage.setItem('userLocation', response.data.city);
+                    } catch (error) {
+                        console.error("Error fetching location details from server:", error);
+                    }
+                }, error => {
+                    console.error("Error getting location:", error);
+                });
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+            }
         }
+
     },
     getters: {
         user: state => state.user,
         userId: state => state.user ? state.user.id : null,
         userRole: state => state.user ? state.user.role : null,
-        currentRoute: state => state.currentRoute
+        currentRoute: state => state.currentRoute,
+        userLocation: state => state.userLocation
     }
 };
 

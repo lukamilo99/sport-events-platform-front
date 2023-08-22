@@ -1,5 +1,5 @@
 <template>
-  <div class="login container shadow">
+  <div class="container shadow">
     <h2 class="mb-4">Login</h2>
     <div class="mb-3">
       <input v-model="email" type="email" placeholder="Email" class="form-control">
@@ -92,7 +92,7 @@ export default {
 
 <style scoped>
 .container {
-  position: relative;
+  padding: 2rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -101,8 +101,6 @@ export default {
   margin-right: auto;
   max-width: 400px;
   box-sizing: border-box;
-  padding-top: 20px;
-  padding-bottom: 20px;
 }
 
 .login-btn, .google-login-btn {

@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { onMounted } from 'vue';
 import { useStore } from 'vuex';
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
@@ -19,13 +20,27 @@ export default {
     FooterComponent,
     HeaderComponent
   },
-  async created() {
+  setup() {
     const store = useStore();
-    const jwtToken = localStorage.getItem('jwt');
-    if (jwtToken) {
-      await store.dispatch('fetchUserAndRedirect');
+
+    const initializeUserLocation = async () => {
+      await store.dispatch('getUserLocation');
     }
-  },
+
+    const authenticateUser = async () => {
+      const jwtToken = localStorage.getItem('jwt');
+      if (jwtToken) {
+        await store.dispatch('fetchUserAndRedirect');
+      }
+    }
+
+    onMounted(async () => {
+      await initializeUserLocation();
+      await authenticateUser();
+    });
+
+    return {};
+  }
 }
 </script>
 

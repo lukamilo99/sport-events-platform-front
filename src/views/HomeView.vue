@@ -1,6 +1,6 @@
 <template>
-  <div class="main-container container mt-5">
-    <section class="content-section p-4 mb-4 bg-light rounded">
+  <div class="container shadow">
+    <section class="content-section p-4 mb-4 bg-light">
       <h2 class="section-title mb-4">Discover & Create</h2>
       <div class="action-wrapper d-flex flex-column align-items-center">
         <div class="icon-filters d-flex gap-2 mb-3">
@@ -18,8 +18,10 @@
       </div>
     </section>
 
-    <section class="content-section p-4 mb-4 bg-light rounded">
-      <h2 class="section-title mb-4">Latest Events</h2>
+    <section class="content-section p-4 mb-4 bg-light">
+      <h2 class="section-title mb-4">
+        Latest Events {{ userLocation ? `in ${userLocation}` : '' }}
+      </h2>
       <div class="row">
         <EventsList :events="events" />
       </div>
@@ -30,26 +32,37 @@
 
 <script>
 import EventsList from '../components/EventList.vue';
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import { useRouter } from 'vue-router';
 import axios from "axios";
+import {useStore} from "vuex";
 
 export default {
   components: {
     EventsList
   },
   setup() {
+    const store = useStore();
     const router = useRouter();
     const events = ref([]);
+    const userLocation = computed(() => store.getters['userLocation']);
 
-    onMounted(async () => {
+    const fetchLatestEvents = async () => {
+      const params = {};
+
+      if (userLocation.value) {
+        params.location = userLocation.value;
+      }
+
       try {
-        const response = await axios.get('http://localhost:8081/event/latest');
+        const response = await axios.get('http://localhost:8081/event/latest', { params });
         events.value = response.data;
       } catch (error) {
         console.error("Error fetching recent events:", error);
       }
-    });
+    }
+
+    onMounted(fetchLatestEvents);
 
     const redirectToEvents = (type, value) => {
       let query = {};
@@ -67,6 +80,7 @@ export default {
 
     return {
       events,
+      userLocation,
       redirectToEvents,
       createEvent,
       viewAllEvents
@@ -76,7 +90,7 @@ export default {
 </script>
 
 <style scoped>
-.main-container {
+.container {
   align-items: center;
   padding: 2rem 0;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

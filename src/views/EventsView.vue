@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container container mt-5">
+  <div class="container shadow">
     <section class="content-section p-4 mb-4 bg-light rounded">
       <h2 class="section-title h3 mb-3">Find Your Event</h2>
       <div class="row">
@@ -34,7 +34,7 @@
     </section>
 
     <section class="content-section p-4 mb-4 bg-light rounded">
-      <h2 class="section-title h3 mb-3">Results</h2>
+      <h2 class="section-title h3 mb-4">Results</h2>
       <div class="row">
         <EventList v-if="events.length" :events="events" />
         <p v-else class="no-results">No results</p>
@@ -174,10 +174,8 @@ export default {
 </script>
 
 <style scoped>
-.main-container {
-  margin-top: 5rem;
+.container {
   padding: 2rem 0;
-  min-height: 100vh;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }

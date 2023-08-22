@@ -1,5 +1,5 @@
 <template>
-  <div class="container profile-container bg-white p-4 rounded shadow">
+  <div class="container shadow">
     <ProfileNavigationComponent />
     <h2 class="my-3">Profile</h2>
 
@@ -112,10 +112,11 @@ export default {
 </script>
 
 <style scoped>
-.profile-container {
+.container {
   margin-left: auto;
   margin-right: auto;
   max-width: 800px;
+  padding: 2rem 2rem;
 }
 </style>
 

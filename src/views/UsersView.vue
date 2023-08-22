@@ -1,5 +1,5 @@
 <template>
-  <div class="users-container container bg-white p-4 rounded shadow">
+  <div class="container rounded shadow">
     <h1 class="mb-4">Users List</h1>
     <input v-model="searchQuery" placeholder="Search by user name" @input="updateSearch(true)" class="form-control mb-4" />
 
@@ -126,10 +126,11 @@ const prevPage = () => {
 </script>
 
 <style scoped>
-.users-container {
+.container {
   margin-left: auto;
   margin-right: auto;
   max-width: 800px;
+  padding: 2rem 2rem;
 }
 
 .no-results {

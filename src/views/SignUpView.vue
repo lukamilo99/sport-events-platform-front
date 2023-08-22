@@ -1,5 +1,5 @@
 <template>
-  <div class="register container shadow">
+  <div class="container shadow shadow">
     <h2 class="mb-4">Register</h2>
     <div class="mb-3">
       <input v-model="firstname" type="text" placeholder="First Name" class="form-control">

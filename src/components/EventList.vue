@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
+  <div class="list-container container">
     <div class="row">
-      <div v-for="event in events" :key="event.id" class="col-md-4 mb-4">
+      <div v-for="event in events" :key="event.id" class="col-md-4">
         <div class="card h-100">
           <div class="card-body d-flex flex-column justify-content-center align-items-center">
           <router-link :to="`/event/${event.name}/${event.id}`" class="event-title card-title">{{ event.name }}</router-link>
@@ -80,6 +80,10 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  padding: 0 !important;
+}
+
 .event-title {
   color: inherit;
   text-decoration: none;

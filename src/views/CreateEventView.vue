@@ -1,5 +1,5 @@
 <template>
-  <div class="create-event-container mt-5">
+  <div class="create-event-container">
     <EventForm
         :mode="'create'"
         @submit="createEvent"

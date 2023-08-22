@@ -1,6 +1,6 @@
 <template>
   <div class="event-details-container container">
-    <div v-if="eventDetails" class="event-item card mt-5 p-4">
+    <div v-if="eventDetails" class="event-item card p-4">
       <div class="header-container d-flex justify-content-between align-items-center mb-3">
         <div class="header-div"></div>
 
@@ -191,6 +191,14 @@ export default {
 
 .sport-icon, .date-icon, .location-icon {
   margin-right: 8px;
+}
+
+.btn-warning {
+  margin-right: 10px;
+}
+
+.btn-primary {
+  margin-right: 10px;
 }
 
 .participants-list {

@@ -1,5 +1,5 @@
 <template>
-  <div class="create-event-container mt-5">
+  <div class="create-event-container">
     <EventForm
         v-if="eventToEdit"
         :mode="'edit'"
@@ -43,7 +43,7 @@ export default {
 
     const getEventToUpdate = async () => {
       try {
-        const response = await axios.get(`http://localhost:8081/event/for-update/${eventId}`);
+        const response = await axios.get(`http://localhost:8081/event/${eventId}`);
         eventToEdit.value = response.data;
       } catch (error) {
         console.error('Error fetching event:', error);
