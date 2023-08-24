@@ -9,8 +9,10 @@ import CreateEvent from "@/views/CreateEventView.vue";
 import EditEvent from "@/views/EditEventView.vue";
 import Events from "@/views/EventsView.vue";
 import EventDetails from "@/views/EventDetailsView.vue"
+import MyFriends from "@/views/MyFriendsView.vue"
 import User from "@/views/UsersView.vue"
 import NotFound from "@/views/NotFoundView.vue"
+import Connect from "@/views/ConnectView.vue"
 
 import {useStore} from "vuex";
 
@@ -56,7 +58,7 @@ const routes = [
         }
     },
     {
-        path: '/profile/my-profile',
+        path: '/profile/info',
         name: 'myProfile',
         component: MyProfile,
         meta: {
@@ -65,7 +67,16 @@ const routes = [
         }
     },
     {
-        path: '/profile/my-events',
+        path: '/profile/friends',
+        name: 'myFriends',
+        component: MyFriends,
+        meta: {
+            requiresAuth: true,
+            roles: ['ADMIN', 'USER']
+        }
+    },
+    {
+        path: '/profile/events',
         name: 'myEvents',
         component: MyEvents,
         meta: {
@@ -130,6 +141,22 @@ const routes = [
         beforeEnter: (to, from, next) => {
             if (!to.query.page) {
                 next({ path: '/users', query: { ...to.query, page: '1' } });
+            } else {
+                next();
+            }
+        }
+    },
+    {
+        path: '/connect',
+        name: 'connect',
+        component: Connect,
+        meta: {
+            requiresAuth: true,
+            roles: ['ADMIN', 'USER']
+        },
+        beforeEnter: (to, from, next) => {
+            if (!to.query.page) {
+                next({ path: '/connect', query: { ...to.query, page: '1' } });
             } else {
                 next();
             }

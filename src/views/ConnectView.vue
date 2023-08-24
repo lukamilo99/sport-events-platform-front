@@ -1,15 +1,15 @@
 <template>
   <div class="container rounded shadow">
-    <h1 class="mb-4">Users List</h1>
+    <h1 class="mb-4">Connect with Users</h1>
     <input v-model="searchQuery" placeholder="Search by user name" @input="updateSearch(true)" class="form-control mb-4" />
 
     <ul v-if="users" class="list-group">
       <li v-for="user in users" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="user-name">{{ user.firstname }} {{ user.lastname }}</span>
+        <span class="user-name">{{ user.name }}</span>
         <div>
-          <button v-if="user.enabled" @click="banUser(user.id)" class="btn btn-warning btn-sm mr-2">Ban</button>
-          <button v-else @click="unbanUser(user.id)" class="btn btn-info btn-sm mr-2">Unban</button>
-          <button @click="deleteUser(user.id)" class="btn btn-danger btn-sm">Delete</button>
+          <button v-if="user.status === 'NOT_FRIEND'" @click="sendFriendRequest(user.id)" class="btn btn-success btn-sm mr-2">Add Friend</button>
+          <button v-else-if="user.status === 'PENDING'" @click="cancelFriendRequest(user.id)" class="btn btn-warning btn-sm mr-2">Cancel Request</button>
+          <button v-else-if="user.status === 'ACCEPTED'" class="btn btn-secondary btn-sm" disabled>Friend</button>
         </div>
       </li>
     </ul>
@@ -25,9 +25,9 @@
 </template>
 
 <script setup>
-import {ref, onMounted, watch} from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
-import {useRoute, useRouter} from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
@@ -46,7 +46,7 @@ watch(() => route.query, newQuery => {
 
 const fetchUsers = async (query = {}) => {
   try {
-    const response = await axios.get(`http://localhost:8081/user/private/search-users`, {
+    const response = await axios.get(`http://localhost:8081/user/public/search-users`, {
       params: {
         ...query,
         page: currentPage.value - 1
@@ -57,38 +57,23 @@ const fetchUsers = async (query = {}) => {
   } catch (error) {
     console.error('Failed to fetch users:', error);
   }
-}
-
-const banUser = async (userId) => {
-  try {
-    await axios.put(`http://localhost:8081/user/ban/${userId}`);
-    await fetchUsers(route.query)
-  } catch (error) {
-    console.error('Failed to ban user:', error);
-  }
 };
 
-const unbanUser = async (userId) => {
+const sendFriendRequest = async (userId) => {
   try {
-    await axios.put(`http://localhost:8081/user/unban/${userId}`);
-    await fetchUsers(route.query)
-  } catch (error) {
-    console.error('Failed to unban user:', error);
-  }
-};
-
-const deleteUser = async (userId) => {
-  try {
-    await axios.delete(`http://localhost:8081/user/delete/${userId}`);
+    await axios.post(`http://localhost:8081/friends/create/${userId}`);
     await fetchUsers(route.query);
-
-    if (!users.value.length && currentPage.value > 1) {
-      currentPage.value--;
-      updateSearch();
-    }
-
   } catch (error) {
-    console.error('Failed to delete user:', error);
+    console.error('Failed to send friend request:', error);
+  }
+};
+
+const cancelFriendRequest = async (userId) => {
+  try {
+    await axios.delete(`http://localhost:8081/friends/delete/${userId}`);
+    await fetchUsers(route.query);
+  } catch (error) {
+    console.error('Failed to cancel friend request:', error);
   }
 };
 
@@ -104,7 +89,7 @@ const updateSearch = (resetPage = false) => {
   }
 
   router.push({
-    path: `/users`,
+    path: `/connect`,
     query: { ...queryParams, page: currentPage.value }
   });
 };
@@ -122,7 +107,6 @@ const prevPage = () => {
     updateSearch();
   }
 };
-
 </script>
 
 <style scoped>
@@ -139,9 +123,4 @@ const prevPage = () => {
   font-size: 1.2rem;
   margin-top: 20px;
 }
-
-.btn-warning {
-  margin-right: 10px;
-}
 </style>
-

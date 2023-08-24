@@ -2,12 +2,21 @@
   <nav class="navigation-switch nav">
     <button
         class="menu-item nav-item btn btn-light"
-        :class="{ active: currentRoute === '/profile/my-profile' }"
-        @click="goTo('/profile/my-profile')">My Profile</button>
+        :class="{ active: currentRoute === '/profile/info' }"
+        @click="goTo('/profile/info')">Profile Info
+    </button>
+
     <button
         class="menu-item nav-item btn btn-light"
-        :class="{ active: currentRoute === '/profile/my-events' }"
-        @click="goTo('/profile/my-events')">My Events</button>
+        :class="{ active: currentRoute === '/profile/friends' }"
+        @click="goTo('/profile/friends')">Friends
+    </button>
+
+    <button
+        class="menu-item nav-item btn btn-light"
+        :class="{ active: currentRoute === '/profile/info' }"
+        @click="goTo('/profile/events')">Events
+    </button>
   </nav>
 </template>
 

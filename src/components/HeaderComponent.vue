@@ -4,14 +4,34 @@
     <div class="navbar-nav">
       <router-link to="/home" class="nav-item nav-link">Home</router-link>
       <router-link :to="{ path: '/events', query: { page: '1' } }" class="nav-item nav-link">Events</router-link>
+      <router-link :to="{ path: '/connect', query: { page: '1' } }" class="nav-item nav-link">Connect</router-link>
       <router-link v-if="isAdmin" to="/users" class="nav-item nav-link btn btn-success">Users</router-link>
     </div>
     <div class="ms-auto">
       <div v-if="isLoggedIn" class="dropdown profile-dropdown">
+        <button class="btn btn-primary" type="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-bell"></i>
+          <span v-if="unreadNotificationsCount" class="badge bg-danger">{{ unreadNotificationsCount }}</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+          <div v-for="notification in notifications.slice(0, 3)" :key="notification.id" class="dropdown-item">
+            {{ notification.message }}
+
+            <div v-if="notification.type === 'FRIEND_REQUEST' || notification.type === 'EVENT_JOIN_REQUEST'">
+              <button @click="acceptRequest(notification)">Approve</button>
+              <button @click="declineRequest(notification)">Reject</button>
+            </div>
+          </div>
+          <router-link to="/profile/notification" class="dropdown-item">See more</router-link>
+          <div v-if="!notifications.length" class="dropdown-item">
+            No notifications.
+          </div>
+        </div>
+
         <button class="btn btn-primary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
           Profile
         </button>
-        <div class="dropdown-menu" aria-labelledby="profileDropdown">
+        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
           <button @click="goToProfile" class="dropdown-item">My Profile</button>
           <button @click="logout" class="dropdown-item">Logout</button>
         </div>
@@ -22,9 +42,10 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue';
+import {computed, ref, watch} from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import axios from "axios";
 
 export default {
   setup() {
@@ -35,6 +56,61 @@ export default {
       return isLoggedIn.value && store.getters.user.role === 'ADMIN';
     });
     const showProfileMenu = ref(false);
+    const notifications = ref([]);
+    const unreadNotificationsCount = ref(0);
+
+    watch(isLoggedIn, (loggedIn) => {
+      if (loggedIn) {
+        fetchNotifications();
+      }
+    });
+
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8081/notification`, {
+          params: {
+            page: 0,
+            size: 3
+          }
+        });
+        notifications.value = response.data.notifications;
+        unreadNotificationsCount.value = response.data.unreadCount;
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    const acceptRequest = async (notification) => {
+      try {
+        if (notification.type === 'EVENT_JOIN_REQUEST') {
+          await axios.post(`http://localhost:8081/event/join/${notification.referenceId}`);
+        } else if (notification.type === 'FRIEND_REQUEST') {
+          await axios.put(`http://localhost:8081/friends/update/${notification.referenceId}`, {}, {
+            params: {
+              status: true
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error accepting request:", error);
+      }
+    };
+
+    const declineRequest = async (notification) => {
+      try {
+        if (notification.type === 'EVENT_JOIN_REQUEST') {
+          await axios.post(`http://localhost:8081/event/join/${notification.referenceId}`);
+        } else if (notification.type === 'FRIEND_REQUEST') {
+          await axios.put(`http://localhost:8081/friends/update/${notification.referenceId}`, {}, {
+            params: {
+              status: false
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error declining request:", error);
+      }
+    };
 
     const logout = async () => {
       try {
@@ -46,7 +122,7 @@ export default {
     };
 
     const goToProfile = () => {
-      router.push('/profile/my-profile');
+      router.push('/profile/info');
     };
 
     return {
@@ -54,7 +130,11 @@ export default {
       logout,
       showProfileMenu,
       goToProfile,
-      isAdmin
+      isAdmin,
+      acceptRequest,
+      declineRequest,
+      notifications,
+      unreadNotificationsCount
     };
   },
 };
