@@ -2,7 +2,17 @@
   <div class="event-details-container container">
     <div v-if="eventDetails" class="event-item card p-4">
       <div class="header-container d-flex justify-content-between align-items-center mb-3">
-        <div class="header-div"></div>
+
+        <div class="header-div">
+          <input v-if="showInviteField" v-model="searchFriendName" type="text" placeholder="Search friend..." class="search-friend-input form-control">
+          <div v-if="filteredFriends.length" class="friends-dropdown">
+            <div v-for="friend in filteredFriends" :key="friend.id" class="friend-item">
+              {{ friend.name }}
+              <button @click="inviteFriend(friend.id)" class="invite-btn btn btn-sm btn-success">Invite</button>
+            </div>
+          </div>
+          <button v-else @click="showInviteField = true" class="invite-btn btn btn-primary">Invite Friend</button>
+        </div>
 
         <div class="header-div">
           <h2 class="event-title card-title">{{ eventDetails.name }}</h2>
@@ -36,6 +46,7 @@
 
       <button @click="showMap(eventDetails.location.coordinates[1], eventDetails.location.coordinates[0])" class="action-btn map-btn btn btn-info mt-3">🗺️ Show on map</button>
     </div>
+
     <EventMap
         :mode="'view'"
         v-if="showMapModal"
@@ -49,7 +60,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import axios from 'axios';
@@ -70,9 +81,17 @@ export default {
 
     const isEventCreator = computed(() => eventDetails.value && eventDetails.value.eventCreator.id === userId.value);
     const isParticipant = computed(() => eventDetails.value && eventDetails.value.participants.some(p => p.id === userId.value));
-    const canJoinEvent = computed(() =>  !isParticipant.value);
+    const canJoinEvent = computed(() => !isParticipant.value && eventDetails.value && eventDetails.value.availableSpots > 0);
     const canLeaveEvent = computed(() => isParticipant.value);
-    const participantCount = computed(() => eventDetails.value.participants.length);
+    const participantCount = computed(() => eventDetails.value ? eventDetails.value.participants.length : 0);
+
+    const showInviteField = ref(false);
+    const searchFriendName = ref('');
+    const allFriends = ref([]);
+
+    const filteredFriends = computed(() => {
+      return allFriends.value.filter(friend => friend.name.toLowerCase().includes(searchFriendName.value.toLowerCase()));
+    });
 
     const fetchEventDetails = async () => {
       const eventId = route.params.eventId;
@@ -149,26 +168,62 @@ export default {
       }
     };
 
+    const inviteFriend = async (friendId) => {
+      try {
+        await axios.post(`http://localhost:8081/event/invite/${route.params.eventId}`, { friendId });
+        showInviteField.value = false;
+        searchFriendName.value = '';
+      } catch (error) {
+        console.error("Error inviting friend:", error);
+      }
+    };
+
+    const searchForFriends = async (query) => {
+      try {
+        const response = await axios.get(`http://localhost:8081/search-friends`, {
+          params: {
+            name: query
+          }
+        });
+        allFriends.value = response.data;
+      } catch (error) {
+        console.error("Error searching for friends:", error);
+      }
+    };
+
+    watch(searchFriendName, newVal => {
+      if (newVal && newVal.trim().length) {
+        searchForFriends(newVal.trim());
+      } else {
+        allFriends.value = [];
+      }
+    });
+
     return {
       eventDetails,
       getSportIcon,
       formatDate,
       showMap,
       showMapModal,
-      currentLat,
-      currentLon,
-      participantCount,
       joinEvent,
       leaveEvent,
       deleteEvent,
-      removeParticipant,
+      isEventCreator,
+      isParticipant,
       canJoinEvent,
       canLeaveEvent,
-      isEventCreator
+      participantCount,
+      showInviteField,
+      searchFriendName,
+      allFriends,
+      filteredFriends,
+      removeParticipant,
+      inviteFriend
     };
   }
-}
+};
 </script>
+
 
 <style scoped>
 .event-details-container {
@@ -216,5 +271,31 @@ export default {
 
 .remove-btn:hover {
   background-color: #c82333;
+}
+
+.search-friend-input {
+  margin-bottom: 10px;
+}
+
+.friends-dropdown {
+  background-color: white;
+  border: 1px solid #ccc;
+  position: absolute;
+  z-index: 10;
+  width: 80%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.friend-item {
+  padding: 8px;
+  border-bottom: 1px solid #f1f1f1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.invite-btn {
+  margin-left: 10px;
 }
 </style>

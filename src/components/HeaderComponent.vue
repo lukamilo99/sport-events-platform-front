@@ -82,7 +82,7 @@ export default {
 
     const acceptRequest = async (notification) => {
       try {
-        if (notification.type === 'EVENT_JOIN_REQUEST') {
+        if (notification.type === 'EVENT_INVITATION') {
           await axios.post(`http://localhost:8081/event/join/${notification.referenceId}`);
         } else if (notification.type === 'FRIEND_REQUEST') {
           await axios.put(`http://localhost:8081/friends/update/${notification.referenceId}`, {}, {
@@ -98,7 +98,7 @@ export default {
 
     const declineRequest = async (notification) => {
       try {
-        if (notification.type === 'EVENT_JOIN_REQUEST') {
+        if (notification.type === 'EVENT_INVITATION') {
           await axios.post(`http://localhost:8081/event/join/${notification.referenceId}`);
         } else if (notification.type === 'FRIEND_REQUEST') {
           await axios.put(`http://localhost:8081/friends/update/${notification.referenceId}`, {}, {
