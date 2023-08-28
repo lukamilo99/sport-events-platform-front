@@ -7,10 +7,15 @@
       <li v-for="user in users" :key="user.id" class="list-group-item d-flex justify-content-between align-items-center">
         <span class="user-name">{{ user.name }}</span>
         <div>
-          <button v-if="user.status === 'NOT_FRIEND'" @click="sendFriendRequest(user.id)" class="btn btn-success btn-sm mr-2">Add Friend</button>
-          <button v-else-if="user.status === 'PENDING'" @click="cancelFriendRequest(user.id)" class="btn btn-warning btn-sm mr-2">Cancel Request</button>
-          <button v-else-if="user.status === 'ACCEPTED'" class="btn btn-secondary btn-sm" disabled>Friend</button>
+          <button v-if="user.relation.status === 'NO_REQUEST'" @click="sendFriendRequest(user.id)" class="btn btn-success btn-sm mr-2">Add Friend</button>
+          <div v-else-if="user.relation.status === 'PENDING' && user.relation.senderId === user.id">
+            <button @click="acceptRequest(user.relation.requestId)" class="btn btn-success btn-sm mr-2">Accept</button>
+            <button @click="declineRequest(user.relation.requestId)" class="btn btn-danger btn-sm mr-2">Reject</button>
+          </div>
+          <button v-else-if="user.relation.status === 'PENDING' && user.relation.recipientId === user.id" @click="cancelFriendRequest(user.relation.requestId)" class="btn btn-warning btn-sm mr-2">Cancel Request</button>
+          <button v-else-if="user.relation.status === 'ACCEPTED'" @click="deleteFriend(user.relation.friendshipId)" class="btn btn-secondary btn-sm">Delete Friend</button>
         </div>
+
       </li>
     </ul>
 
@@ -61,19 +66,46 @@ const fetchUsers = async (query = {}) => {
 
 const sendFriendRequest = async (userId) => {
   try {
-    await axios.post(`http://localhost:8081/friends/create/${userId}`);
+    await axios.post(`http://localhost:8081/interaction/friend-request/${userId}`);
     await fetchUsers(route.query);
   } catch (error) {
     console.error('Failed to send friend request:', error);
   }
 };
 
-const cancelFriendRequest = async (userId) => {
+const cancelFriendRequest = async (requestId) => {
   try {
-    await axios.delete(`http://localhost:8081/friends/delete/${userId}`);
+    await axios.delete(`http://localhost:8081/interaction/request/${requestId}/cancel`);
     await fetchUsers(route.query);
   } catch (error) {
     console.error('Failed to cancel friend request:', error);
+  }
+};
+
+const acceptRequest = async (requestId) => {
+  try {
+    await axios.post(`http://localhost:8081/interaction/request/${requestId}/accept`);
+    await fetchUsers(route.query);
+  } catch (error) {
+    console.error('Failed to accept request:', error);
+  }
+};
+
+const declineRequest = async (requestId) => {
+  try {
+    await axios.post(`http://localhost:8081/interaction/request/${requestId}/decline`);
+    await fetchUsers(route.query);
+  } catch (error) {
+    console.error('Failed to decline request:', error);
+  }
+};
+
+const deleteFriend = async (friendshipId) => {
+  try {
+    await axios.delete(`http://localhost:8081/friends/delete/${friendshipId}`);
+    await fetchUsers(route.query);
+  } catch (error) {
+    console.error('Failed to delete friend:', error);
   }
 };
 

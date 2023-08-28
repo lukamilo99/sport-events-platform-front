@@ -4,14 +4,18 @@
       <div class="header-container d-flex justify-content-between align-items-center mb-3">
 
         <div class="header-div">
-          <input v-if="showInviteField" v-model="searchFriendName" type="text" placeholder="Search friend..." class="search-friend-input form-control">
-          <div v-if="filteredFriends.length" class="friends-dropdown">
-            <div v-for="friend in filteredFriends" :key="friend.id" class="friend-item">
-              {{ friend.name }}
-              <button @click="inviteFriend(friend.id)" class="invite-btn btn btn-sm btn-success">Invite</button>
+          <div class="friends-dropdown dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" id="friendsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Invite friends
+            </button>
+            <div class="friends-list dropdown-menu" aria-labelledby="friendsDropdown">
+              <input v-model="searchFriendName" @input="searchForFriends(searchFriendName)" type="text" placeholder="Search friend..." class="search-friend-input form-control">
+              <div v-for="friend in filteredFriends" :key="friend.id" class="friend-item dropdown-item d-flex justify-content-between align-items-center">
+                {{ friend.name }}
+                <button @click="inviteFriend(friend.id)" class="invite-btn btn btn-sm btn-success">Invite</button>
+              </div>
             </div>
           </div>
-          <button v-else @click="showInviteField = true" class="invite-btn btn btn-primary">Invite Friend</button>
         </div>
 
         <div class="header-div">
@@ -60,7 +64,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import axios from 'axios';
@@ -87,11 +91,7 @@ export default {
 
     const showInviteField = ref(false);
     const searchFriendName = ref('');
-    const allFriends = ref([]);
-
-    const filteredFriends = computed(() => {
-      return allFriends.value.filter(friend => friend.name.toLowerCase().includes(searchFriendName.value.toLowerCase()));
-    });
+    const filteredFriends = ref([]);
 
     const fetchEventDetails = async () => {
       const eventId = route.params.eventId;
@@ -170,34 +170,30 @@ export default {
 
     const inviteFriend = async (friendId) => {
       try {
-        await axios.post(`http://localhost:8081/event/invite/${route.params.eventId}`, { friendId });
-        showInviteField.value = false;
+        await axios.post(`http://localhost:8081/interaction/event-invitation/${route.params.eventId}/${friendId}`);
         searchFriendName.value = '';
+        filteredFriends.value = [];
       } catch (error) {
         console.error("Error inviting friend:", error);
       }
     };
 
     const searchForFriends = async (query) => {
-      try {
-        const response = await axios.get(`http://localhost:8081/search-friends`, {
-          params: {
-            name: query
-          }
-        });
-        allFriends.value = response.data;
-      } catch (error) {
-        console.error("Error searching for friends:", error);
+      if (query) {
+        try {
+          const response = await axios.get(`http://localhost:8081/friends/user-friends`, {
+            params: {
+              name: query
+            }
+          });
+          filteredFriends.value = response.data.users;
+        } catch (error) {
+          console.error("Error searching for friends:", error);
+        }
+      } else {
+        filteredFriends.value = [];
       }
     };
-
-    watch(searchFriendName, newVal => {
-      if (newVal && newVal.trim().length) {
-        searchForFriends(newVal.trim());
-      } else {
-        allFriends.value = [];
-      }
-    });
 
     return {
       eventDetails,
@@ -215,15 +211,16 @@ export default {
       participantCount,
       showInviteField,
       searchFriendName,
-      allFriends,
       filteredFriends,
       removeParticipant,
-      inviteFriend
+      inviteFriend,
+      searchForFriends,
+      currentLat,
+      currentLon
     };
   }
 };
 </script>
-
 
 <style scoped>
 .event-details-container {
@@ -256,7 +253,7 @@ export default {
   margin-right: 10px;
 }
 
-.participants-list {
+.participants-list, .friends-list {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
@@ -277,25 +274,11 @@ export default {
   margin-bottom: 10px;
 }
 
-.friends-dropdown {
-  background-color: white;
-  border: 1px solid #ccc;
-  position: absolute;
-  z-index: 10;
-  width: 80%;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.friend-item {
-  padding: 8px;
-  border-bottom: 1px solid #f1f1f1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .invite-btn {
   margin-left: 10px;
+}
+
+.header-div {
+  position: relative;
 }
 </style>

@@ -7,7 +7,7 @@
         <div class="friend-item">
           {{ friend.name }}
           <div class="friend-actions">
-            <button @click="removeFriend(friend.id)" class="btn btn-sm btn-danger ml-2">Remove</button>
+            <button @click="removeFriend(friend.relation.friendshipId)" class="btn btn-sm btn-danger ml-2">Remove</button>
           </div>
         </div>
       </li>
@@ -48,9 +48,9 @@ export default {
       }
     };
 
-    const removeFriend = async (friendId) => {
+    const removeFriend = async (friendshipId) => {
       try {
-        await axios.post(`http://localhost:8081/friends/remove/${friendId}`);
+        await axios.delete(`http://localhost:8081/friends/delete/${friendshipId}`);
         await fetchUserFriends();
       } catch (error) {
         console.error("Error removing friend:", error);

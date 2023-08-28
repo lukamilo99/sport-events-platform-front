@@ -17,7 +17,7 @@
           <div v-for="notification in notifications.slice(0, 3)" :key="notification.id" class="dropdown-item">
             {{ notification.message }}
 
-            <div v-if="notification.type === 'FRIEND_REQUEST' || notification.type === 'EVENT_JOIN_REQUEST'">
+            <div v-if="notification.type === 'REQUEST'">
               <button @click="acceptRequest(notification)">Approve</button>
               <button @click="declineRequest(notification)">Reject</button>
             </div>
@@ -82,15 +82,8 @@ export default {
 
     const acceptRequest = async (notification) => {
       try {
-        if (notification.type === 'EVENT_INVITATION') {
-          await axios.post(`http://localhost:8081/event/join/${notification.referenceId}`);
-        } else if (notification.type === 'FRIEND_REQUEST') {
-          await axios.put(`http://localhost:8081/friends/update/${notification.referenceId}`, {}, {
-            params: {
-              status: true
-            }
-          });
-        }
+        await axios.post(`http://localhost:8081/interaction/request/${notification.requestId}/accept`);
+        await fetchNotifications();
       } catch (error) {
         console.error("Error accepting request:", error);
       }
@@ -98,15 +91,8 @@ export default {
 
     const declineRequest = async (notification) => {
       try {
-        if (notification.type === 'EVENT_INVITATION') {
-          await axios.post(`http://localhost:8081/event/join/${notification.referenceId}`);
-        } else if (notification.type === 'FRIEND_REQUEST') {
-          await axios.put(`http://localhost:8081/friends/update/${notification.referenceId}`, {}, {
-            params: {
-              status: false
-            }
-          });
-        }
+        await axios.post(`http://localhost:8081/interaction/request/${notification.requestId}/decline`);
+        await fetchNotifications();
       } catch (error) {
         console.error("Error declining request:", error);
       }
